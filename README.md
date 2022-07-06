@@ -19,3 +19,7 @@ Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_do
 and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
 be found at <https://hexdocs.pm/go_fish>.
 
+
+## References
+
+Inspired by this tutorial https://www.youtube.com/watch?v=OG7e5SidbCU
