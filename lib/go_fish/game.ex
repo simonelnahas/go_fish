@@ -7,7 +7,4 @@ defmodule GoFish.Game do
             deck: GoFish.Deck.new(),
             status: :not_started
 
-  def new() do
-    # TODO
-  end
 end
