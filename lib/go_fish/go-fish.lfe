@@ -1,16 +1,16 @@
 (defmodule gofish
-  (export (ocean 1) (initial-state 0) (start 0)))
+  (export (ocean 1) (initial-state 0) (game-start 0) (player 1)))
 
 ;; an ocean 
 ;; where we can send it the message drawcard and we will receive back a card
-(defun initial-state () '('heart1 'heart2 'spades3)) ;TODO replace with cards
+(defun initial-state () '('heart1 'heart2 'spades3)) ;TODO replace with deck of 52 cards
 (defun ocean
-  ([()] (receive 
-         ((tuple 'draw caller-pid) 
-          (! caller-pid 'no-cards-left)
-          (ocean ()))))
+  ([()] ;; no more cards left
+   (receive
+    ((tuple 'draw caller-pid)
+     (! caller-pid 'no-cards-left)
+     (ocean ()))))
   ([(cons card deck)] ; take the card in front
-  ;;  (lfe_io:format "ocean: waiting\n" ())
    (receive
     ((tuple 'draw caller-pid)
      (lfe_io:format "OCEAN: send card: ~p - to pid: ~p\n" (list card caller-pid))
@@ -22,16 +22,23 @@
 ;;    1. it sends the message 
 ;;    2. it receives the message
 ;;    3. we do receive the card back
-;;    4. we 
+
 
 (defun receiver ()
   (receive ((tuple 'card card)
             (lfe_io:format "START: received the card: ~p\n" (list card))
             (receiver))
-           ('no-cards-left 
+           ('no-cards-left
             (lfe_io:format "START: no cards left\n" ()))))
 
-(defun start ()
+(defun print-message
+  ([(tuple 'ok message)] (lfe_io:format "PLAYER: message ~p\n" (list message))))
+
+;; TODO: take a card when input is given
+(defun player (name)
+  (print-message (lfe_io:read "take card? y/n")))
+
+(defun game-start ()
   (let ((ocean-pid (spawn 'gofish 'ocean (list (initial-state)))))
     (lfe_io:format "PLAYING:\n\n" ())
     (! ocean-pid (tuple 'draw (self)))
