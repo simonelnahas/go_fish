@@ -1,10 +1,17 @@
 (defmodule go-fish
-  (export (give-cards 1) (ocean 1) (initial-state 0) (game-start 0) (player 1) (start-player 0)
-          (draw-card 1)))
+  (export (give-cards 2) (ocean 1) (initial-state 0) (game-start 0) (player 1)
+          (draw-card 1) (make-deck 0)))
 
 ;; an ocean 
 ;; where we can send it the message drawcard and we will receive back a card
-(defun initial-state () '('heart1 'heart2 'spades3)) ;TODO replace with deck of 52 cards
+(defrecord card suit value)
+
+(defun make-deck ()
+  (list-comp ((<- suit '(heart spades diamonds clubs))
+              (<- value (lists:seq 2 14)))
+             (make-card suit suit value value))) ;; TODO shuffle cards
+
+(defun initial-state () (list (make-card suit 'heart value 2) (make-card suit 'spades value 2))) ;TODO replace with deck of 52 cards
 (defun ocean
   ([()] ;; no more cards left
    (receive
@@ -19,9 +26,9 @@
      (ocean deck)))))
 
 ;; TODO change to card record. (make-card suit 'heart value 2)
-(defun get-cards-with-number (number cards)
-  (lists:filter (lambda (x) ()))
-  ([(number cards)]))
+;; (defun get-cards-with-number (number cards)
+;;   (lists:filter (lambda (x) ()))
+;;   ([(number cards)]))
 
 ;; take a card when function is called
 ;; 1. draw card is sent and received
@@ -36,7 +43,8 @@
            ((tuple 'cards cards)
             (player (++ cards deck)))
            ((tuple 'give-me-all-your number to)
-            (let ((matches) ())))))
+            ;(let ((matches) ()))
+            )))
 
 (defun draw-card (player)
   (! player 'go-fish))
