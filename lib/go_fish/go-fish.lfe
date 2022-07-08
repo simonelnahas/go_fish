@@ -18,6 +18,11 @@
      (! caller-pid (tuple 'card card))
      (ocean deck)))))
 
+;; TODO change to card record. (make-card suit 'heart value 2)
+(defun get-cards-with-number (number cards)
+  (lists:filter (lambda (x) ()))
+  ([(number cards)]))
+
 ;; take a card when function is called
 ;; 1. draw card is sent and received
 ;; 2. card is sent back and received 
@@ -29,7 +34,9 @@
            ((tuple 'card card)
             (player (cons card deck)))
            ((tuple 'cards cards)
-            (player (++ cards deck)))))
+            (player (++ cards deck)))
+           ((tuple 'give-me-all-your number to)
+            (let ((matches) ())))))
 
 (defun draw-card (player)
   (! player 'go-fish))
@@ -37,13 +44,15 @@
 (defun give-cards (player cards)
   (! player (tuple 'cards cards)))
 
-(defun start-player ()
-  (register 'player1 (spawn 'go-fish 'player '())))
+;;TODO
+(defun give-me-all-your (from to number)
+  (! to (tuple 'give-me-all-your number to)))
 
 (defun game-start ()
   (lfe_io:format "STARTING GAME\n\n" ())
   (register 'ocean (spawn 'go-fish 'ocean (list (initial-state))))
-  (register 'player1 (spawn 'go-fish 'player '(()))))
+  (register 'player1 (spawn 'go-fish 'player '(())))
+  (register 'player2 (spawn 'go-fish 'player '(()))))
 
 ;;; example code from the LFE docs:
 (defmodule tut20
