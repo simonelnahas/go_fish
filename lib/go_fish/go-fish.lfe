@@ -1,5 +1,6 @@
-(defmodule gofish
-  (export (ocean 1) (initial-state 0) (game-start 0) (player 1)))
+(defmodule go-fish
+  (export (give-cards 1) (ocean 1) (initial-state 0) (game-start 0) (player 1) (start-player 0)
+          (draw-card 1)))
 
 ;; an ocean 
 ;; where we can send it the message drawcard and we will receive back a card
@@ -17,36 +18,32 @@
      (! caller-pid (tuple 'card card))
      (ocean deck)))))
 
-;; we want a to send a message to the deck an receive back a card.
-;; Current status:
-;;    1. it sends the message 
-;;    2. it receives the message
-;;    3. we do receive the card back
+;; take a card when function is called
+;; 1. draw card is sent and received
+;; 2. card is sent back and received 
+(defun player (deck)
+  (lfe_io:format "player1 has the deck: ~p\n" (list deck))
+  (receive ('go-fish
+            (! 'ocean (tuple 'draw (self)))
+            (player deck))
+           ((tuple 'card card)
+            (player (cons card deck)))
+           ((tuple 'cards cards)
+            (player (++ cards deck)))))
 
+(defun draw-card (player)
+  (! player 'go-fish))
 
-(defun receiver ()
-  (receive ((tuple 'card card)
-            (lfe_io:format "START: received the card: ~p\n" (list card))
-            (receiver))
-           ('no-cards-left
-            (lfe_io:format "START: no cards left\n" ()))))
+(defun give-cards (player cards)
+  (! player (tuple 'cards cards)))
 
-(defun print-message
-  ([(tuple 'ok message)] (lfe_io:format "PLAYER: message ~p\n" (list message))))
-
-;; TODO: take a card when input is given
-(defun player (name)
-  (print-message (lfe_io:read "take card? y/n")))
+(defun start-player ()
+  (register 'player1 (spawn 'go-fish 'player '())))
 
 (defun game-start ()
-  (let ((ocean-pid (spawn 'gofish 'ocean (list (initial-state)))))
-    (lfe_io:format "PLAYING:\n\n" ())
-    (! ocean-pid (tuple 'draw (self)))
-    (! ocean-pid (tuple 'draw (self)))
-    (! ocean-pid (tuple 'draw (self)))
-    (! ocean-pid (tuple 'draw (self)))
-    (! ocean-pid (tuple 'draw (self))))
-  (receiver))
+  (lfe_io:format "STARTING GAME\n\n" ())
+  (register 'ocean (spawn 'go-fish 'ocean (list (initial-state))))
+  (register 'player1 (spawn 'go-fish 'player '(()))))
 
 ;;; example code from the LFE docs:
 (defmodule tut20
