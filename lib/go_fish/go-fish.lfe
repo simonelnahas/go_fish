@@ -3,21 +3,28 @@
 
 ;; an ocean 
 ;; where we can send it the message drawcard and we will receive back a card
-(defun initial-state () '()) ;TODO replace with cards
+(defun initial-state () '('heart1 'heart3 'spades3)) ;TODO replace with cards
 (defun ocean
   ([()] 'no-cards-left)
   ([(cons card deck)] ; take the card in front
-   (lfe_io:format "waiting\n" ())
+   (lfe_io:format "ocean: waiting\n" ())
    (receive
     ((tuple 'draw caller-pid)
+     (lfe_io:format "caller~p~p\n" (list caller-pid card))
      (! caller-pid card)
      (lfe_io:format "received message\n" ())
      (ocean deck)))))
 
+;; we want a to send a message to the deck an receive back a card.
+;; Current status:
+;;    1. it sends the message 
+;;    2. it receives the message
+;;    3. PROBLEM: it doesn't send the card back
+
 (defun start ()
-  (let ((ocean-pid (spawn 'gofish 'ocean '((initial-state)))))
+  (let ((ocean-pid (spawn 'gofish 'ocean (list (initial-state)))))
     (lfe_io:format "playing\n" ())
-    (! ocean-pid (tuple 'draw (self))) ; it only prints messages for the first one
+    (! ocean-pid #('draw (self))) ; it only prints messages for the first one
     (! ocean-pid (tuple 'draw (self)))
     (! ocean-pid (tuple 'draw (self)))
     (! ocean-pid (tuple 'draw (self))))
