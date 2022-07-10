@@ -4,7 +4,7 @@ defmodule GoFish.Game do
   """
 
   defstruct users: %{}, #Example :user1 => %{:cards => [{:suit :hearts, :value 2}]}
-            deck: GoFish.Deck.new(),
+            deck: GoFish.Ocean.new(),
             status: :not_started
 
 end
