@@ -1,17 +1,17 @@
 (defmodule go-fish
-  (export (give-cards 2) (ocean 1) (initial-state 0) (game-start 0) (player 1)
-          (draw-card 1) (make-deck 0)))
+  (export (give-cards 2) (ocean 1) 
+          (game-start 0) (example-play 0)
+          (player 1)
+          (draw-card 1) (make-deck 0)
+          (give-me-all-your 3)))
 
 ;; an ocean 
 ;; where we can send it the message drawcard and we will receive back a card
-(defrecord card suit value)
-
 (defun make-deck ()
   (list-comp ((<- suit '(heart spades diamonds clubs))
               (<- value (lists:seq 2 14)))
-             (make-card suit suit value value))) ;; TODO shuffle cards
+             (tuple suit value))) ;; TODO shuffle cards
 
-(defun initial-state () (list (make-card suit 'heart value 2) (make-card suit 'spades value 2))) ;TODO replace with deck of 52 cards
 (defun ocean
   ([()] ;; no more cards left
    (receive
@@ -25,26 +25,30 @@
      (! caller-pid (tuple 'card card))
      (ocean deck)))))
 
-;; TODO change to card record. (make-card suit 'heart value 2)
-;; (defun get-cards-with-number (number cards)
-;;   (lists:filter (lambda (x) ()))
-;;   ([(number cards)]))
+(defun get-cards-with-number (asking-value cards)
+  (lists:filter (lambda [card] (let (((tuple _suit value) card)) (== value asking-value))) cards))
 
+
+;; (defun remove-cards-from-cards (cards-to-remove cards)
+;;   (lists:filter (lambda (card))
+;;                 '(#(heart 2) #(heart 3))))
 ;; take a card when function is called
 ;; 1. draw card is sent and received
 ;; 2. card is sent back and received 
-(defun player (deck)
-  (lfe_io:format "player1 has the deck: ~p\n" (list deck))
+(defun player (hand)
+  (lfe_io:format "player has the hand: ~p\n" (list hand))
   (receive ('go-fish
             (! 'ocean (tuple 'draw (self)))
-            (player deck))
+            (player hand))
            ((tuple 'card card)
-            (player (cons card deck)))
+            (lfe_io:format "player receiving the card: ~p\n" (list card))
+            (player (cons card hand)))
            ((tuple 'cards cards)
-            (player (++ cards deck)))
-           ((tuple 'give-me-all-your number to)
-            ;(let ((matches) ()))
-            )))
+            (player (++ cards hand)))
+           ((tuple 'give-me-all-your taker asking-value)
+            (let ((matches (get-cards-with-number asking-value hand)))
+              (! taker (tuple 'cards matches))
+              (player hand))))); TODO remove matches from hand
 
 (defun draw-card (player)
   (! player 'go-fish))
@@ -52,15 +56,21 @@
 (defun give-cards (player cards)
   (! player (tuple 'cards cards)))
 
-;;TODO
-(defun give-me-all-your (from to number)
-  (! to (tuple 'give-me-all-your number to)))
+(defun give-me-all-your  (giver taker asking-value)
+  (! giver (tuple 'give-me-all-your taker asking-value)))
 
 (defun game-start ()
   (lfe_io:format "STARTING GAME\n\n" ())
-  (register 'ocean (spawn 'go-fish 'ocean (list (initial-state))))
+  (register 'ocean (spawn 'go-fish 'ocean (list (make-deck))))
   (register 'player1 (spawn 'go-fish 'player '(())))
   (register 'player2 (spawn 'go-fish 'player '(()))))
+
+(defun example-play ()
+  (lfe_io:format "EXAMPLE GAME\n\n" ())
+  (lists:foreach
+   (lambda (x) (draw-card 'player1))
+   (lists:seq 1 50))
+  (give-me-all-your 'player1 'player2 2))
 
 ;;; example code from the LFE docs:
 (defmodule tut20
