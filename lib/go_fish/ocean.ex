@@ -30,6 +30,8 @@ defmodule GoFish.Ocean do
     GenServer.call(__MODULE__, :go_fish)
   end
 
+  
+
   # Server
 
   def init(_arg) do
@@ -43,5 +45,8 @@ defmodule GoFish.Ocean do
   def handle_call(:go_fish, _from, [card|deck]) do
     {:reply, card, deck}
   end
+
+
+
 
 end
