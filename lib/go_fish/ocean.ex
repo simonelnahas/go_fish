@@ -5,6 +5,10 @@ defmodule GoFish.Ocean do
     defstruct [:suit, :value]
   end
 
+  # Jacks-Aces is 11-14
+  defp values(), do: Enum.to_list(2..14)
+  defp suits(), do: [:spades, :diamonds, :clubs, :hearts]
+
   def generate_deck() do
     for value <- values(), suit <- suits() do
       %Card{value: value, suit: suit}
@@ -14,7 +18,7 @@ defmodule GoFish.Ocean do
 
   # Client API
 
-  def start_link() do
+  def start_link(_) do
     GenServer.start_link(__MODULE__, nil, name: __MODULE__)
   end
 
@@ -25,10 +29,6 @@ defmodule GoFish.Ocean do
   def go_fish() do
     GenServer.call(__MODULE__, :go_fish)
   end
-
-
-
-
 
   # Server
 
@@ -43,41 +43,5 @@ defmodule GoFish.Ocean do
   def handle_call(:go_fish, _from, [card|deck]) do
     {:reply, card, deck}
   end
-
-
-
-
-
-
-
-
-
-  # Jacks-Aces is 11-14
-  defp values(), do: Enum.to_list(2..14)
-  defp suits(), do: [:spades, :diamonds, :clubs, :hearts]
-
-  # defp loop([]) do
-  #   IO.puts("OCEAN: receiving")
-  #   receive do
-  #     {:draw, caller_pid} ->
-  #       send(caller_pid, :no_cards_left)
-  #       loop([])
-  #   end
-  # end
-
-  # defp loop([card | deck]) do
-  #   IO.puts("OCEAN: receiving")
-  #   receive do
-  #     {:draw, caller_pid} ->
-  #       IO.puts(["OCEAN: sending card: ", card])
-  #       send(caller_pid, {:card card})
-  #       loop(deck)
-  #   end
-  # end
-
-  # def init() do
-  #   IO.puts("OCEAN: initializing")
-  #   spawn(fn -> loop(new()) end)
-  # end
 
 end
