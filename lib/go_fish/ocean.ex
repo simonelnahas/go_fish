@@ -18,7 +18,7 @@ defmodule GoFish.Ocean do
 
   # Client API
 
-  def start_link(_) do
+  def start_link() do
     GenServer.start_link(__MODULE__, nil, name: __MODULE__)
   end
 
@@ -26,11 +26,10 @@ defmodule GoFish.Ocean do
     GenServer.cast(__MODULE__, :stop)
   end
 
-  def go_fish() do
-    GenServer.call(__MODULE__, :go_fish)
+  def take_card() do
+    GenServer.call(__MODULE__, :take_card)
   end
 
-  
 
   # Server
 
@@ -42,11 +41,12 @@ defmodule GoFish.Ocean do
     {:stop, :normal}
   end
 
-  def handle_call(:go_fish, _from, [card|deck]) do
-    {:reply, card, deck}
+  def handle_call(:take_card, _from, [card|deck]) do
+    {:reply, {:card, card}, deck}
   end
 
-
-
+  def handle_call(:take_card, _from, []) do
+    {:reply, :no_cards_left, []}
+  end
 
 end

@@ -4,15 +4,15 @@ defmodule GoFish.GameTest do
 
 
   test "initializing game" do
-    {:ok, pid} = GoFish.Server.start_link(3)
+    {:ok, pid} = GoFish.Ocean.start_link()
     assert pid # not nil
   end
 
 
   test "drawing a card" do
-    {:ok, pid} = GoFish.Server.start_link(3)
-    card = GoFish.Server.take_card(pid)
-    assert card.__struct__ == GoFish.Deck.Card
+    {:ok, pid} = GoFish.Ocean.start_link()
+    {:card, card} = GoFish.Ocean.take_card()
+    assert card.__struct__ == GoFish.Ocean.Card
     assert card.value > 1 and card.value < 15
   end
 end

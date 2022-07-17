@@ -1,0 +1,19 @@
+@startuml
+
+title In the middle of a game
+
+participant "john : Player" as John
+participant "simon : Player" as Simon
+John -> Simon: giveMeAllYour(3)
+Simon --> John: [3 of hearts, 3 of spades]
+John -> Simon: giveMeAllYour(4)
+Simon --> John: goFish()
+note right 
+    Once Simon has sent the message to go fish, 
+    he knows it is his turn. 
+end note
+John -> Ocean: takeCard()
+Ocean --> John: [5 of hearts]
+Simon --> John: giveMeAllYour(5)
+John -> Simon: [5 of hearts, 5 of diamonds]
+@enduml

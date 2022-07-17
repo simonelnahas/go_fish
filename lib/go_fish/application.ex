@@ -9,7 +9,6 @@ defmodule GoFish.Application do
   def start(_type, _args) do
     children = [
       # Starts a worker by calling: GoFish.Worker.start_link(arg)
-      # {GoFish.Worker, arg}
       {GoFish.Ocean, []},
       {GoFish.Player, :john},
       {GoFish.Player, :simon}
