@@ -16,15 +16,19 @@ defmodule GoFish.Player do
     GenServer.call(name, {:give, num})
   end
 
-  def go_fish(name) do
-    GenServer.cast(name, :go_fish)
-  end
+  # def go_fish(name) do
+  #   GenServer.cast(name, :go_fish)
+  # end
 
 
   # Server
 
   def init(_arg) do
-    {:ok, []}
+    {:ok, [] # initial state
+    # TODO:
+    # players: []
+    # isMyTurn: bool
+  }
   end
 
   def handle_cast(:stop, _state) do
@@ -37,17 +41,18 @@ defmodule GoFish.Player do
     {:reply, matches, hand}
   end
 
-  def handle_cast(:go_fish, state) do
-    {:ok, [GoFish.Ocean.go_fish() | state]}
-  end
+  # def handle_cast(:go_fish, state) do
+  #   {:ok, [GoFish.Ocean.go_fish() | state]}
+  # end
 
   def play(:play,state) do
+    #TODO:
+    # ask for card
+
+
+    # give turn to next person. If a person says go_fish then it is their turn next.
     [GoFish.Ocean.go_fish() | state]
   end
-
-
-
-
 
 
 
