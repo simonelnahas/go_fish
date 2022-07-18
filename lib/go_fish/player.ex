@@ -50,6 +50,7 @@ defmodule GoFish.Player do
   end
 
   def handle_call({:take_all_your, num, giver}, _from, state) do
+    # TODO John: refactor out into functions
     IO.puts("taking cards with value #{num} from #{giver}")
     if Map.get(state,:isMyTurn) do
       IO.puts("it is my turn")
@@ -67,7 +68,9 @@ defmodule GoFish.Player do
                 IO.puts("There are no cards left in the ocean")
                 {:reply, :no_cards_left, state} #TODO handle when game is over
             end
-        {:matches, matches} -> {:reply, {:got_cards, matches}, %{state | :hand => matches ++ Map.get(state, :hand)}}
+        {:matches, matches} ->
+          IO.puts("Yay! I got the cards #{inspect(matches)}")
+          {:reply, {:got_cards, matches}, %{state | :hand => matches ++ Map.get(state, :hand)}}
       end
     else
       IO.puts("I tried to take cards, but it wasn't my turn")
@@ -84,7 +87,7 @@ defmodule GoFish.Player do
         {:reply,
           :go_fish,
           %{state | :isMyTurn => true}}
-      {:matches, matches}  ->
+      matches  ->
         {:reply,
           {:matches, matches},
           %{state | :hand => new_hand}}
@@ -96,12 +99,19 @@ defmodule GoFish.Player do
   end
 
   def handle_call({:draw_cards, num}, _from, state) do
-    cards = Enum.map(1..num, fn _x ->
-        {:card, card} = GoFish.Ocean.take_card()
-        card
-      end)
-    {:reply, :got_cards, %{state | :hand => cards ++ Map.get(state, :hand)} }
+    case GoFish.Ocean.take_card() do
+      :no_cards_left -> {:reply, :no_cards_left, state}
+      {:card, card1} ->
+        cards = List.foldl(Enum.to_list(2..num), [], fn _x, acc ->
+            case GoFish.Ocean.take_card() do
+              {:card, card} -> [card| acc]
+              :no_cards_left -> acc
+            end
+          end)
+        {:reply, :got_cards, %{state | :hand => [card1|cards] ++ Map.get(state, :hand)} }
+    end
   end
+
 
 
   # def handle_cast(:go_fish, state) do

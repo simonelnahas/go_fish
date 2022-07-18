@@ -9,17 +9,28 @@ defmodule GoFish.Ocean do
   defp values(), do: Enum.to_list(2..14)
   defp suits(), do: [:spades, :diamonds, :clubs, :hearts]
 
-  def generate_deck() do
+  def generate_unshuffled_deck() do
     for value <- values(), suit <- suits() do
       %Card{value: value, suit: suit}
-    end |> Enum.shuffle()
+    end
   end
+
+  def generate_deck() do
+    generate_unshuffled_deck()
+     |> Enum.shuffle()
+  end
+
+
 
 
   # Client API
 
   def start_link() do
     GenServer.start_link(__MODULE__, nil, name: __MODULE__)
+  end
+
+  def start_link(:sorted) do
+    GenServer.start_link(__MODULE__, :sorted, name: __MODULE__)
   end
 
   def stop() do
@@ -33,8 +44,12 @@ defmodule GoFish.Ocean do
 
   # Server
 
-  def init(_arg) do
+  def init(nil) do
     {:ok, generate_deck()}
+  end
+
+  def init(:sorted) do
+    {:ok, generate_unshuffled_deck()}
   end
 
   def handle_cast(:stop, _state) do
