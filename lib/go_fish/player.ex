@@ -50,35 +50,18 @@ defmodule GoFish.Player do
   end
 
   def handle_call({:take_all_your, num, giver}, _from, state) do
-    # TODO John: refactor out into functions
     IO.puts("taking cards with value #{num} from #{giver}")
     if Map.get(state,:isMyTurn) do
       IO.puts("it is my turn")
       case give_all_my(num, giver) do
-        :go_fish ->
-          IO.puts("They didn't have the requested value so I go fishing")
-          case GoFish.Ocean.take_card() do
-              {:card, card} ->
-                IO.puts("I drew the card #{inspect(card)} from the ocean")
-                newState = %{state |
-                              :isMyTurn => false,
-                              :hand => [card | Map.get(state, :hand)]}
-                {:reply, :went_fishing, newState}
-              :no_cards_left ->
-                IO.puts("There are no cards left in the ocean")
-                {:reply, :no_cards_left, state} #TODO handle when game is over
-            end
-        {:matches, matches} ->
-          IO.puts("Yay! I got the cards #{inspect(matches)}")
-          {:reply, {:got_cards, matches}, %{state | :hand => matches ++ Map.get(state, :hand)}}
+        :go_fish -> go_fish(state)
+        {:matches, matches} -> receive_matches(state, matches)
       end
     else
       IO.puts("I tried to take cards, but it wasn't my turn")
       {:reply, :not_my_turn, state}
     end
   end
-
-  
 
   def handle_call({:give_all_my, num}, _from, state) do
     hand = Map.get(state, :hand)
@@ -142,4 +125,30 @@ defmodule GoFish.Player do
   #     {:give-me-all-your, taker, asking-value} ->
   #       IO.puts("not implemented") #TODO
   # end
+
+
+
+
+  # Helper functions
+
+  def go_fish(state) do
+    IO.puts("They didn't have the requested value so I go fishing")
+    case GoFish.Ocean.take_card() do
+        {:card, card} ->
+          IO.puts("I drew the card #{inspect(card)} from the ocean")
+          newState = %{state |
+                        :isMyTurn => false,
+                        :hand => [card | Map.get(state, :hand)]}
+          {:reply, :went_fishing, newState}
+        :no_cards_left ->
+          IO.puts("There are no cards left in the ocean")
+          {:reply, :no_cards_left, state} #TODO handle when game is over
+    end
+  end
+
+  def receive_matches(state, matches) do
+    IO.puts("Yay! I got the cards #{inspect(matches)}")
+    {:reply, {:got_cards, matches}, %{state | :hand => matches ++ Map.get(state, :hand)}}
+  end
+
 end
