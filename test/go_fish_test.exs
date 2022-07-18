@@ -16,10 +16,7 @@ defmodule GoFishTest do
     assert :went_fishing == GoFish.Player.take_all_your(3, :john, :simon)
   end
 
-  def start_example_game() do
-    assert :got_cards == GoFish.Player.draw_cards(:simon, 7)
-    assert :got_cards == GoFish.Player.draw_cards(:john, 7)
-  end
+
 
   test "draw 7 cards" do
     assert :got_cards == GoFish.Player.draw_cards(:simon, 7)
@@ -47,6 +44,11 @@ defmodule GoFishTest do
     assert :no_cards_left == GoFish.Player.draw_cards(:john, 2)
   end
 
+  def start_example_game() do
+    assert :got_cards == GoFish.Player.draw_cards(:simon, 7)
+    assert :got_cards == GoFish.Player.draw_cards(:john, 7)
+  end
+
   test "example game play" do
     start_example_game()
     assert {:got_cards, matches} = GoFish.Player.take_all_your(3, :john, :simon)
@@ -59,9 +61,14 @@ defmodule GoFishTest do
   end
 
   test "creating books" do
-    #TODO create books.
+    #TODO create books for the player
+    assert :got_cards == GoFish.Player.draw_cards(:simon, 7) #gets 4 2's and 3 3's.
+    %{:hand => hand, :books => books} = GoFish.Player.get_state(:simon)
+    # assert that hand only contains three values, since the first form should have been made into a book.
+    assert 3 == length(hand)
+    # assert that books holds the number 2
+    assert Enum.find(books, fn x -> x == 2 end)
 
-    nil
   end
 
 end
