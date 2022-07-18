@@ -41,21 +41,28 @@ defmodule GoFish.Player do
     {:stop, :normal}
   end
 
-  def handle_call({:take_all_your, num, giver}, state) do
+  def handle_call({:take_all_your, num, giver}, _from, state) do
+    IO.puts("taking cards with value #{num} from #{giver}")
     if Map.get(state,:isMyTurn) do
+      IO.puts("it is my turn")
       case give_all_my(num, giver) do
         :go_fish ->
-            case GoFish.Ocean.take_card() do
+          IO.puts("They didn't have the requested value so I go fishing")
+          case GoFish.Ocean.take_card() do
               {:card, card} ->
-                {:noreply,
-                  %{state |
-                    :isMyTurn => false,
-                    :hand => [card | Map.get(state, :hand)]}}
-              :no_cards_left -> {:reply, :no_cards_left, state} #TODO handle when game is over
+                IO.puts("I drew the card #{inspect(card)} from the ocean")
+                newState = %{state |
+                              :isMyTurn => false,
+                              :hand => [card | Map.get(state, :hand)]}
+                {:reply, :went_fishing, newState}
+              :no_cards_left ->
+                IO.puts("There are no cards left in the ocean")
+                {:reply, :no_cards_left, state} #TODO handle when game is over
             end
         {:matches, matches} -> {:reply, {:got_cards, matches}, %{state | :hand => matches ++ Map.get(state, :hand)}}
       end
     else
+      IO.puts("I tried to take cards, but it wasn't my turn")
       {:reply, :not_my_turn, state}
     end
   end
