@@ -16,8 +16,6 @@ defmodule GoFishTest do
     assert :went_fishing == GoFish.Player.take_all_your(3, :john, :simon)
   end
 
-
-
   test "draw 7 cards" do
     assert :got_cards == GoFish.Player.draw_cards(:simon, 7)
     assert %{:hand => hand} = GoFish.Player.get_state(:simon)
@@ -52,10 +50,11 @@ defmodule GoFishTest do
   test "example game play" do
     start_example_game()
     assert {:got_cards, matches} = GoFish.Player.take_all_your(3, :john, :simon)
-    assert matches == [%GoFish.Ocean.Card{suit: :clubs, value: 3},
-                        %GoFish.Ocean.Card{suit: :diamonds, value: 3},
-                        %GoFish.Ocean.Card{suit: :spades, value: 3}]
-                        #TODO: consider using sets to check if cards
+    to_match =  [%GoFish.Ocean.Card{suit: :clubs, value: 3},
+                  %GoFish.Ocean.Card{suit: :diamonds, value: 3},
+                  %GoFish.Ocean.Card{suit: :spades, value: 3}]
+
+    assert Enum.all?(to_match, fn match -> match in matches end)
 
     # TODO: add rest of sequence diagram.
   end
@@ -68,7 +67,6 @@ defmodule GoFishTest do
     assert 3 == length(hand)
     # assert that books holds the number 2
     assert Enum.find(books, fn x -> x == 2 end)
-
   end
 
 end
