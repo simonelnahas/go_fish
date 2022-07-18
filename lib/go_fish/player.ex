@@ -78,6 +78,8 @@ defmodule GoFish.Player do
     end
   end
 
+  
+
   def handle_call({:give_all_my, num}, _from, state) do
     hand = Map.get(state, :hand)
     matches = Enum.filter(hand,fn x -> x.value == num end)
