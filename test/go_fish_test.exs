@@ -60,6 +60,7 @@ defmodule GoFishTest do
 
   test "creating books" do
     #TODO create books.
+    nil
   end
 
 end
