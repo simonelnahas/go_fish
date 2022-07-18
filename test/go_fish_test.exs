@@ -19,7 +19,7 @@ defmodule GoFishTest do
   test "draw 7 cards" do
     assert :got_cards == GoFish.Player.draw_cards(:simon, 7)
     assert %{:hand => hand} = GoFish.Player.get_state(:simon)
-    assert 7 == length(hand)
+    assert 3 == length(hand) # only 3 cards in the hand since the first 4 cards of the sorted deck will form a book
   end
 
 
