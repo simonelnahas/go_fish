@@ -17,9 +17,12 @@ defmodule GoFishTest do
   end
 
 
-  test "draw cards" do
+  test "draw 7 cards" do
     assert :got_cards == GoFish.Player.draw_cards(:simon, 7)
+    assert %{:hand => hand} = GoFish.Player.get_state(:simon)
+    assert 7 == length(hand)
   end
+
 
 
 end
