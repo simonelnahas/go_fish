@@ -6,7 +6,6 @@ defmodule GoFish.Player do
 
   def start_link(name, isMyTurn) do
     GenServer.start_link(__MODULE__, isMyTurn, name: name)
-    draw_cards(name, 7)
   end
 
   def stop(name) do
@@ -23,13 +22,16 @@ defmodule GoFish.Player do
     GenServer.call(giver, {:give_all_my, num})
   end
 
+  def get_state(name) do
+    GenServer.call(name, :get_state)
+  end
+
+  def draw_cards(name, num) do
+    GenServer.call(name, {:draw_cards, num})
+  end
+
 
   # Server
-
-  defp draw_cards(player, num) do
-    Enum.map(1..num, fn _x -> GoFish.Ocean.take_card() end)
-
-  end
 
   def init(true) do
     {:ok,
@@ -87,6 +89,18 @@ defmodule GoFish.Player do
           {:matches, matches},
           %{state | :hand => new_hand}}
     end
+  end
+
+  def handle_call(:get_state, _from, state) do
+    {:reply, state, state}
+  end
+
+  def handle_call({:draw_cards, num}, _from, state) do
+    cards = Enum.map(1..num, fn _x ->
+        {:card, card} = GoFish.Ocean.take_card()
+        card
+      end)
+    {:reply, :got_cards, %{state | :hand => cards ++ Map.get(state, :hand)} }
   end
 
 

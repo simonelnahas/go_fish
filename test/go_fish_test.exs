@@ -13,13 +13,13 @@ defmodule GoFishTest do
   end
 
   test "take card on empty hands" do
-    assert :went_fishing = GoFish.Player.take_all_your(3, :john, :simon)
+    assert :went_fishing == GoFish.Player.take_all_your(3, :john, :simon)
   end
 
 
-  # test "take card" do
-  #   assert :went_fishing = GoFish.Player.take_all_your(3, :john, :simon)
-  # end
+  test "draw cards" do
+    assert :got_cards == GoFish.Player.draw_cards(:simon, 7)
+  end
 
 
 end
