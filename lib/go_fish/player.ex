@@ -4,8 +4,12 @@ defmodule GoFish.Player do
 
   # Client API
 
-  def start_link(name, isMyTurn) do
+  def start_link({name, isMyTurn}) do
     GenServer.start_link(__MODULE__, isMyTurn, name: name)
+  end
+
+  def game_over(name) do
+    GenServer.cast(name, :game_over)
   end
 
   def stop(name) do
@@ -36,25 +40,33 @@ defmodule GoFish.Player do
   def init(true) do
     {:ok,
       # initial state:
-      %{:hand => [], :isMyTurn => true}}
+      %{:hand => [], :isMyTurn => true, :books => 0}}
   end
 
   def init(false) do
     {:ok,
       # initial state:
-      %{:hand => [], :isMyTurn => false}}
+      %{:hand => [], :isMyTurn => true, :books => 0}}
+  end
+
+  def handle_cast(:game_over, state) do
+    IO.puts("Game Over. Score: #{Map.get(state, :books)}")
+    GoFish.Ocean.game_over()
+    {:noreply,
+    %{:hand => [], :isMyTurn => true, :books => 0}}
   end
 
   def handle_cast(:stop, _state) do
     {:stop, :normal}
   end
 
+
   def handle_call({:take_all_your, num, giver}, _from, state) do
     IO.puts("taking cards with value #{num} from #{giver}")
     if Map.get(state,:isMyTurn) do
       IO.puts("it is my turn")
       case give_all_my(num, giver) do
-        :go_fish -> go_fish(state)
+        :go_fish -> go_fish(state, giver, self())
         {:matches, matches} -> receive_matches(state, matches)
       end
     else
@@ -131,7 +143,8 @@ defmodule GoFish.Player do
 
   # Helper functions
 
-  def go_fish(state) do
+
+  def go_fish(state, giver, taker) do
     IO.puts("They didn't have the requested value so I go fishing")
     case GoFish.Ocean.take_card() do
         {:card, card} ->
@@ -142,7 +155,9 @@ defmodule GoFish.Player do
           {:reply, :went_fishing, newState}
         :no_cards_left ->
           IO.puts("There are no cards left in the ocean")
-          {:reply, :no_cards_left, state} #TODO handle when game is over
+          game_over(giver)
+          game_over(taker)
+          {:reply, :game_over, state}
     end
   end
 
