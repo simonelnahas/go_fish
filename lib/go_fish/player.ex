@@ -75,6 +75,9 @@ defmodule GoFish.Player do
   def create_books(state) do
     %{:hand => hand} = state
     books = get_books(hand)
+    if books != [] do
+      IO.puts("collected books: #{inspect(books)}")
+    end
     state_with_books = %{state | :books => books ++ Map.get(state,:books)}
     List.foldl(books, state_with_books,
       fn book_value, s ->
@@ -150,6 +153,7 @@ defmodule GoFish.Player do
               :no_cards_left -> acc
             end
           end)
+          # IO.puts(":got_cards #{inspect([card1|cards])}\n\n")
         {:reply, :got_cards, add_cards(state, [card1|cards]) }
     end
   end
