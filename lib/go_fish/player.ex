@@ -35,6 +35,35 @@ defmodule GoFish.Player do
   end
 
 
+  # Helper functions
+
+  def take_card_from_ocean(state, card) do
+    IO.puts("I drew the card #{inspect(card)} from the ocean")
+    newState = %{state |
+                  :isMyTurn => false,
+                  :hand => [card | Map.get(state, :hand)]}
+    {:reply, :went_fishing, newState}
+  end
+
+  def go_fish(state, giver, taker) do
+    IO.puts("They didn't have the requested value so I go fishing")
+    case GoFish.Ocean.take_card() do
+        {:card, card} -> take_card_from_ocean(state, card)
+        :no_cards_left ->
+          IO.puts("There are no cards left in the ocean")
+          game_over(giver)
+          game_over(taker)
+          {:reply, :game_over, state}
+    end
+  end
+
+  def receive_matches(state, matches) do
+    IO.puts("Yay! I got the cards #{inspect(matches)}")
+    {:reply, {:got_cards, matches}, %{state | :hand => matches ++ Map.get(state, :hand)}}
+  end
+
+
+
   # Server
 
   def init(true) do
@@ -139,31 +168,5 @@ defmodule GoFish.Player do
   # end
 
 
-
-
-  # Helper functions
-
-
-  def go_fish(state, giver, taker) do
-    IO.puts("They didn't have the requested value so I go fishing")
-    case GoFish.Ocean.take_card() do
-        {:card, card} ->
-          IO.puts("I drew the card #{inspect(card)} from the ocean")
-          newState = %{state |
-                        :isMyTurn => false,
-                        :hand => [card | Map.get(state, :hand)]}
-          {:reply, :went_fishing, newState}
-        :no_cards_left ->
-          IO.puts("There are no cards left in the ocean")
-          game_over(giver)
-          game_over(taker)
-          {:reply, :game_over, state}
-    end
-  end
-
-  def receive_matches(state, matches) do
-    IO.puts("Yay! I got the cards #{inspect(matches)}")
-    {:reply, {:got_cards, matches}, %{state | :hand => matches ++ Map.get(state, :hand)}}
-  end
 
 end
