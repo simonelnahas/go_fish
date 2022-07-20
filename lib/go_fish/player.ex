@@ -3,7 +3,6 @@ defmodule GoFish.Player do
 
 
   # Client API
-
   def start_link(name, isMyTurn) do
     GenServer.start_link(__MODULE__, isMyTurn, name: name)
   end
@@ -112,32 +111,4 @@ defmodule GoFish.Player do
     end
   end
 
-
-
-  # def handle_cast(:go_fish, state) do
-  #   {:ok, [GoFish.Ocean.go_fish() | state]}
-  # end
-
-  # def play_turn(:play_turn, state) do
-  #   #TODO:
-  #   # ask for card
-  #   # if it is my turn
-
-  #   # give turn to next person. If a person says go_fish then it is their turn next.
-  #   [GoFish.Ocean.go_fish() | state]
-  # end
-
-  # defp loop(hand) do
-  #   IO.puts(["Player has the hand: ",hand])
-  #   receive
-  #     :go-fish ->
-  #       send(ocean, {:draw, self()})
-  #       # TODO: register name ocean in registry
-  #     {:card, card} ->
-  #       loop([card|hand])
-  #     {:cards, cards} ->
-  #       loop(cards ++ hand)
-  #     {:give-me-all-your, taker, asking-value} ->
-  #       IO.puts("not implemented") #TODO
-  # end
 end
