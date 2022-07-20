@@ -8,7 +8,7 @@ defmodule GoFishTest do
     on_exit(fn ->
       GoFish.Player.stop(:simon)
       GoFish.Player.stop(:john)
-      :timer.sleep(5000)
+      :timer.sleep(1000)
       end)
   end
 

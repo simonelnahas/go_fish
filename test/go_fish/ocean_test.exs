@@ -8,6 +8,7 @@ defmodule GoFish.OceanTest do
 
 
   test "drawing a card" do
+    # TODO: use start_supervised! instead
       {:ok, _} = GoFish.Ocean.start_link(nil)
       {:card, card} = GoFish.Ocean.take_card()
       assert card.__struct__ == GoFish.Ocean.Card
