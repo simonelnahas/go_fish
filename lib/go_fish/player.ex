@@ -30,6 +30,34 @@ defmodule GoFish.Player do
   end
 
 
+
+    # Helper functions
+
+    def take_card_from_ocean(state, card) do
+      IO.puts("I drew the card #{inspect(card)} from the ocean")
+      newState = %{state |
+                    :isMyTurn => false,
+                    :hand => [card | Map.get(state, :hand)]}
+      {:reply, :went_fishing, newState}
+    end
+
+    def go_fish(state) do
+      IO.puts("They didn't have the requested value so I go fishing")
+      case GoFish.Ocean.take_card() do
+          {:card, card} -> take_card_from_ocean(state, card)
+          :no_cards_left ->
+            IO.puts("There are no cards left in the ocean")
+            {:reply, :game_over, state}
+      end
+    end
+
+    def receive_matches(state, matches) do
+      IO.puts("Yay! I got the cards #{inspect(matches)}")
+      {:reply, {:got_cards, matches}, %{state | :hand => matches ++ Map.get(state, :hand)}}
+    end
+
+
+
   # Server
 
   def init(true) do
@@ -49,27 +77,12 @@ defmodule GoFish.Player do
   end
 
   def handle_call({:take_all_your, num, giver}, _from, state) do
-    # TODO John: refactor out into functions
     IO.puts("taking cards with value #{num} from #{giver}")
     if Map.get(state,:isMyTurn) do
       IO.puts("it is my turn")
       case give_all_my(num, giver) do
-        :go_fish ->
-          IO.puts("They didn't have the requested value so I go fishing")
-          case GoFish.Ocean.take_card() do
-              {:card, card} ->
-                IO.puts("I drew the card #{inspect(card)} from the ocean")
-                newState = %{state |
-                              :isMyTurn => false,
-                              :hand => [card | Map.get(state, :hand)]}
-                {:reply, :went_fishing, newState}
-              :no_cards_left ->
-                IO.puts("There are no cards left in the ocean")
-                {:reply, :no_cards_left, state} #TODO handle when game is over
-            end
-        {:matches, matches} ->
-          IO.puts("Yay! I got the cards #{inspect(matches)}")
-          {:reply, {:got_cards, matches}, %{state | :hand => matches ++ Map.get(state, :hand)}}
+        :go_fish -> go_fish(state)
+        {:matches, matches} -> receive_matches(state, matches)
       end
     else
       IO.puts("I tried to take cards, but it wasn't my turn")
