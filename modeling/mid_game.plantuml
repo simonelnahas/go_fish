@@ -4,16 +4,24 @@ title In the middle of a game
 
 participant "john : Player" as John
 participant "simon : Player" as Simon
+Simon -> Ocean: take_cards(7)
+Ocean -> Simon: [2 of hearts, 2 of spades, 2 of clubs, 2 of diamonds, 3 of spades, 3 of diamonds, 3 of clubs]
+John -> Ocean: take_cards(7)
+Ocean -> John: [3 of hearts, 4 of spades, 4 of clubs, 4 of diamonds, 4 of hearts, 5 of spades, 5 of diamonds]
 John -> Simon: giveMeAllYour(3)
-Simon --> John: [3 of hearts, 3 of spades]
-John -> Simon: giveMeAllYour(4)
+Simon --> John: [3 of hearts, 3 of spades, 3 of diamonds]
+John -> Simon: giveMeAllYour(2)
+note right 
+    Simon already made a 2's book.
+end note
 Simon --> John: goFish()
 note right 
     Once Simon has sent the message to go fish, 
     he knows it is his turn. 
 end note
 John -> Ocean: takeCard()
-Ocean --> John: [5 of hearts]
-Simon --> John: giveMeAllYour(5)
-John -> Simon: [5 of hearts, 5 of diamonds]
+Ocean --> John: [5 of clubs]
+Simon -> John: giveMeAllYour(5)
+John -> Simon: [5 of clubs, 5 of diamonds, 5 of spades]
+Simon -> John: giveMeAllYour(4)
 @enduml
