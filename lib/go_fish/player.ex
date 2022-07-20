@@ -4,7 +4,7 @@ defmodule GoFish.Player do
 
   # Client API
 
-  def start_link(name, isMyTurn) do
+  def start_link({name, isMyTurn}) do
     GenServer.start_link(__MODULE__, isMyTurn, name: name)
   end
 

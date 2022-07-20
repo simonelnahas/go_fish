@@ -23,15 +23,17 @@ defmodule GoFish.Ocean do
 
 
 
-  # Client API
 
-  def start_link() do
-    GenServer.start_link(__MODULE__, nil, name: __MODULE__)
-  end
+  # Client API
 
   def start_link(:sorted) do
     GenServer.start_link(__MODULE__, :sorted, name: __MODULE__)
   end
+
+  def start_link(_) do
+    GenServer.start_link(__MODULE__, nil, name: __MODULE__)
+  end
+
 
   def game_over() do
     GenServer.cast(__MODULE__, :game_over)

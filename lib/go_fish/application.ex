@@ -5,9 +5,12 @@ defmodule GoFish.Application do
 
   use Application
 
+
+
   @impl true
   def start(_type, _args) do
-    children = [
+
+    child_spec = [
       # Starts a worker by calling: GoFish.Worker.start_link(arg)
       {GoFish.Ocean, []},
       Supervisor.child_spec({GoFish.Player, {:john, true}}, id: :john),
@@ -17,6 +20,6 @@ defmodule GoFish.Application do
     # See https://hexdocs.pm/elixir/Supervisor.html
     # for other strategies and supported options
     opts = [strategy: :one_for_one, name: GoFish.Supervisor]
-    Supervisor.start_link(children, opts)
+    Supervisor.start_link(child_spec, opts)
   end
 end
