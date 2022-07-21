@@ -4,13 +4,18 @@ defmodule GoFish.Player do
 
   # Client API
 
-  def start_link({name, isMyTurn}) do
-    GenServer.start_link(__MODULE__, isMyTurn, name: name)
+  def start_link({name, is_my_turn}) do
+    GenServer.start_link(__MODULE__, is_my_turn, name: name)
+  end
+
+  def game_started(name) do
+    GenServer.cast(name, :start_game)
   end
 
   def game_over(name) do
     GenServer.cast(name, :game_over)
   end
+
   def stop(name) do
     GenServer.cast(name, :stop)
   end
@@ -33,7 +38,7 @@ defmodule GoFish.Player do
     GenServer.call(name, {:draw_cards, num})
   end
 
-  
+
     # Helper functions
 
     def go_fish(state) do
@@ -41,7 +46,7 @@ defmodule GoFish.Player do
       case GoFish.Ocean.take_card() do
           {:card, card} ->
             IO.puts("I drew the card #{inspect(card)} from the ocean")
-            {:reply, :went_fishing, %{add_card(state,card) | :isMyTurn => false}}
+            {:reply, :went_fishing, %{add_card(state,card) | :is_my_turn => false}}
           :no_cards_left ->
             IO.puts("There are no cards left in the ocean")
             #TODO: Handle game over.
@@ -56,16 +61,19 @@ defmodule GoFish.Player do
 
   # Server
 
-  def get_initial_state(isMyTurn) do
-    %{:hand => [], :isMyTurn => isMyTurn, :books => []}
-    #TODO: consider having a current status for :game_over :game_in_progress
+  def get_initial_state(is_my_turn) do
+    %{:hand => [], :is_my_turn => is_my_turn, :books => [], :game_state => :in_progress}
   end
 
-  def init(isMyTurn) do
+  def init(is_my_turn) do
     {:ok,
       # initial state:
-      get_initial_state(isMyTurn)
+      get_initial_state(is_my_turn)
       }
+  end
+
+  def handle_cast(:start_game, state) do
+    GoFish.Ocean.
   end
 
   def handle_cast(:game_over, state) do
@@ -126,7 +134,7 @@ defmodule GoFish.Player do
 
   def handle_call({:take_all_your, num, giver}, _from, state) do
     IO.puts("taking cards with value #{num} from #{giver}")
-    if Map.get(state,:isMyTurn) do
+    if Map.get(state,:is_my_turn) do
       IO.puts("it is my turn")
       case give_all_my(num, giver) do
         :go_fish -> go_fish(state)
@@ -143,7 +151,7 @@ defmodule GoFish.Player do
       %{:matches => []} ->
         {:reply,
           :go_fish,
-          %{state | :isMyTurn => true}}
+          %{state | :is_my_turn => true}}
       %{:matches => matches, :new_hand => new_hand}  ->
         {:reply,
           {:matches, matches},
