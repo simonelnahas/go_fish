@@ -5,6 +5,9 @@ A card game with multiple players.
 Rules:
 https://en.wikipedia.org/wiki/Go_Fish
 
+variation:
+- Instead of going round in a circle the turn switches to the person saying go fish.
+
 ## Notes for upcoming blog post.
 
 Learnings:

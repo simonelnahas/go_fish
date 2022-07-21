@@ -1,0 +1,51 @@
+@startuml
+
+title Game ends and starts again with 2 players
+
+note right 
+Game is over when:
+- I don't have any cards
+- No cards left in Ocean
+- No one else has any cards left
+end note
+
+
+note right 
+Current state:
+John has [3 of spades, 3 of diamonds]
+Simon has [3 of clubs]
+Ocean has [3 of hearts]
+end note
+
+John -> Simon: give_me_all_your(3)
+Simon --> John: [3 of clubs]
+John -> Simon: give_me_all_your(3)
+Simon --> John: go_fish
+John -> Ocean: take_card()
+Ocean --> John: [3 of hearts]
+John -> John: save_book
+note right 
+John got a book and now doesn't have any cards.
+Simon doesn't have any cards.
+The Ocean is empty.
+game is over
+end note
+
+John -> John: any_cards_left?()
+John --> John: {no, 10}
+John -> Simon: any_cards_left?()
+Simon --> John: {no, 4}
+John -> Ocean: any_cards_left?()
+Ocean --> John: no
+John -> John: the_game_is_over({:winner, :john})
+John -> Simon: the_game_is_over({:winner, :john})
+John -> Ocean: the_game_is_over({:winner, :john})
+
+note right 
+    Everyone has now set their :game_state to :game_over
+end note
+
+John -> Supervisor: restart_game
+
+
+@enduml

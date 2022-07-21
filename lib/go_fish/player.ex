@@ -8,9 +8,14 @@ defmodule GoFish.Player do
     GenServer.start_link(__MODULE__, is_my_turn, name: name)
   end
 
+  def game_started(name) do
+    GenServer.cast(name, :start_game)
+  end
+
   def game_over(name) do
     GenServer.cast(name, :game_over)
   end
+
   def stop(name) do
     GenServer.cast(name, :stop)
   end
@@ -57,8 +62,7 @@ defmodule GoFish.Player do
   # Server
 
   def get_initial_state(is_my_turn) do
-    %{:hand => [], :is_my_turn => is_my_turn, :books => [], :is_live => true}
-    #TODO: consider having a current status for :game_over :game_in_progress
+    %{:hand => [], :is_my_turn => is_my_turn, :books => [], :game_state => :in_progress}
   end
 
   def init(is_my_turn) do
@@ -66,6 +70,10 @@ defmodule GoFish.Player do
       # initial state:
       get_initial_state(is_my_turn)
       }
+  end
+
+  def handle_cast(:start_game, state) do
+    GoFish.Ocean.
   end
 
   def handle_cast(:game_over, state) do
