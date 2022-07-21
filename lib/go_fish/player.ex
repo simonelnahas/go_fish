@@ -3,10 +3,14 @@ defmodule GoFish.Player do
 
 
   # Client API
-  def start_link(name, isMyTurn) do
+
+  def start_link({name, isMyTurn}) do
     GenServer.start_link(__MODULE__, isMyTurn, name: name)
   end
 
+  def game_over(name) do
+    GenServer.cast(name, :game_over)
+  end
   def stop(name) do
     GenServer.cast(name, :stop)
   end
@@ -21,7 +25,7 @@ defmodule GoFish.Player do
     GenServer.call(giver, {:give_all_my, num})
   end
 
-  def get_state(name) do
+  def get_state(name) do #TODO: should only be callable by tests
     GenServer.call(name, :get_state)
   end
 
@@ -29,8 +33,7 @@ defmodule GoFish.Player do
     GenServer.call(name, {:draw_cards, num})
   end
 
-
-
+  
     # Helper functions
 
     def go_fish(state) do
@@ -41,36 +44,41 @@ defmodule GoFish.Player do
             {:reply, :went_fishing, %{add_card(state,card) | :isMyTurn => false}}
           :no_cards_left ->
             IO.puts("There are no cards left in the ocean")
+            #TODO: Handle game over.
             {:reply, :no_cards_left, state}
       end
     end
 
     def receive_matches(state, matches) do
       IO.puts("Yay! I got the cards #{inspect(matches)}")
-      {:reply, {:got_cards, matches}, %{state | :hand => matches ++ Map.get(state, :hand)}}
+      {:reply, {:got_cards, matches}, add_cards(state, matches)}
     end
-
-
 
   # Server
 
-  def init(true) do
-    {:ok,
-      # initial state:
-      %{:hand => [], :isMyTurn => true, :books => []}}
+  def get_initial_state(isMyTurn) do
+    %{:hand => [], :isMyTurn => isMyTurn, :books => []}
+    #TODO: consider having a current status for :game_over :game_in_progress
   end
 
-  def init(false) do
+  def init(isMyTurn) do
     {:ok,
       # initial state:
-      %{:hand => [], :isMyTurn => false, :books => []}}
-      #TODO: starting removing :hand and :books from initial state and then
-      # set them when used the first time
+      get_initial_state(isMyTurn)
+      }
+  end
+
+  def handle_cast(:game_over, state) do
+    IO.puts("Game Over. Score: #{Map.get(state, :books)}")
+    GoFish.Ocean.game_over()
+    {:noreply,
+      :game_over}
   end
 
   def handle_cast(:stop, _state) do
     {:stop, :normal}
   end
+
 
   def get_matches_from_hand(hand, value) do
     case Enum.group_by(hand, fn card -> card.value == value end) do
@@ -140,7 +148,6 @@ defmodule GoFish.Player do
         {:reply,
           {:matches, matches},
           %{state | :hand => new_hand}}
-
     end
   end
 
@@ -163,7 +170,7 @@ defmodule GoFish.Player do
             end
           end)
           # IO.puts(":got_cards #{inspect([card1|cards])}\n\n")
-        {:reply, :got_cards, add_cards(state, [card1|cards]) }
+          {:reply, :got_cards, add_cards(state, [card1|cards]) }
     end
   end
 

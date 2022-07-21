@@ -23,14 +23,20 @@ defmodule GoFish.Ocean do
 
 
 
-  # Client API
 
-  def start_link() do
-    GenServer.start_link(__MODULE__, nil, name: __MODULE__)
-  end
+  # Client API
 
   def start_link(:sorted) do
     GenServer.start_link(__MODULE__, :sorted, name: __MODULE__)
+  end
+
+  def start_link(_) do
+    GenServer.start_link(__MODULE__, nil, name: __MODULE__)
+  end
+
+
+  def game_over() do
+    GenServer.cast(__MODULE__, :game_over)
   end
 
   def stop() do
@@ -51,6 +57,15 @@ defmodule GoFish.Ocean do
   def init(:sorted) do
     {:ok, generate_unshuffled_deck()}
   end
+
+  def handle_cast(:game_over, []) do
+    {:noreply, generate_deck()}
+  end
+
+  # TODO:
+  # def handle_cast(:game_over, _not_empty_deck) do
+  #   throw("Can't end game when there are still cards in Ocean")
+  # end
 
   def handle_cast(:stop, _state) do
     {:stop, :normal}

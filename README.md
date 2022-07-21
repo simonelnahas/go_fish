@@ -20,6 +20,14 @@ and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
 be found at <https://hexdocs.pm/go_fish>.
 
 
+## Upcoming blog
+
+Problems encountered throughout:
+
+- You need to use `mix test --no-start` to avoid the application starting polluting the tests.
+
 ## References
 
 Inspired by this tutorial https://www.youtube.com/watch?v=OG7e5SidbCU
+
+

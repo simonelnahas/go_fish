@@ -2,14 +2,10 @@ defmodule GoFishTest do
   use ExUnit.Case
 
   setup do
-    assert {:ok,_} = GoFish.Ocean.start_link(:sorted)
-    assert {:ok,_} = GoFish.Player.start_link(:simon, false)
-    assert {:ok,_} = GoFish.Player.start_link(:john, true)
-    on_exit(fn ->
-      GoFish.Player.stop(:simon)
-      GoFish.Player.stop(:john)
-      :timer.sleep(1000)
-      end)
+    assert start_supervised!({GoFish.Ocean, :sorted})
+    assert start_supervised!(Supervisor.child_spec({GoFish.Player, {:john, true}}, id: :john))
+    assert start_supervised!(Supervisor.child_spec({GoFish.Player, {:simon, true}}, id: :simon))
+    :ok
   end
 
   test "take card on empty hands" do
@@ -73,7 +69,6 @@ defmodule GoFishTest do
   end
 
   test "creating books" do
-    #TODO create books for the player
     assert :got_cards == GoFish.Player.draw_cards(:simon, 7) #gets 4 2's and 3 3's.
     %{:hand => hand, :books => books} = GoFish.Player.get_state(:simon)
     # assert that hand only contains three values, since the first form should have been made into a book.

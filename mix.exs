@@ -7,14 +7,17 @@ defmodule GoFish.MixProject do
       version: "0.1.0",
       elixir: "~> 1.13",
       start_permanent: Mix.env() == :prod,
-      deps: deps()
+      deps: deps(),
+      aliases: [test: "test --no-start"]
     ]
   end
 
   # Run "mix help compile.app" to learn about applications.
   def application do
     [
-      extra_applications: [:logger]
+      extra_applications: [:logger],
+
+      mod: {GoFish.Application, []}
     ]
   end
 
