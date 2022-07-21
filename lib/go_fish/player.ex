@@ -25,7 +25,7 @@ defmodule GoFish.Player do
     GenServer.call(giver, {:give_all_my, num})
   end
 
-  def get_state(name) do
+  def get_state(name) do #TODO: should only be callable by tests
     GenServer.call(name, :get_state)
   end
 
@@ -33,8 +33,7 @@ defmodule GoFish.Player do
     GenServer.call(name, {:draw_cards, num})
   end
 
-
-
+  
     # Helper functions
 
     def go_fish(state) do
@@ -52,7 +51,7 @@ defmodule GoFish.Player do
 
     def receive_matches(state, matches) do
       IO.puts("Yay! I got the cards #{inspect(matches)}")
-      {:reply, {:got_cards, matches}, %{state | :hand => matches ++ Map.get(state, :hand)}}
+      {:reply, {:got_cards, matches}, add_cards(state, matches)}
     end
 
   # Server
