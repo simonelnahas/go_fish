@@ -1,33 +1,19 @@
-# GoFish
+# GoFish - Elixir Implementation
 
-**TODO: Add description**
+A card game with multiple players.
 
-## Installation
+Rules:
+https://en.wikipedia.org/wiki/Go_Fish
 
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed
-by adding `go_fish` to your list of dependencies in `mix.exs`:
+## Notes for upcoming blog post.
 
-```elixir
-def deps do
-  [
-    {:go_fish, "~> 0.1.0"}
-  ]
-end
-```
-
-Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
-and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
-be found at <https://hexdocs.pm/go_fish>.
-
-
-## Upcoming blog
-
-Problems encountered throughout:
-
-- You need to use `mix test --no-start` to avoid the application starting polluting the tests.
+Learnings:
+- First implemented a version using raw processes with the `receive` and `send` functions. But it was cumbersome to implement synchronous messages and keeping state.
+- We switched to using GenServer since it provided a good structure.
+- We made sure the public API of each module always was functions, such that no process was sending messages directly to another process. Since this will be brittle, when the internal implementation changes.
+- We tested the GenServers with ExUnit. First we used `start_link` in `setup` and `stop` in `on_exit`, but we found that not all processes had been terminated, before the next test started, and so we had to add sleep timers. A bit later we found that we could avoid this by using the inbuilt `start_supervised!` instead of `start_link` in the `setup` block for the tests. Then we could remove the sleep timers and our tests ran much faster.
+- We added a supervisor application with the strategy one-to-one to recover from failure when a process failed.
+- The tests started failing, because it was automatically starting the supervisor application before running the tests, and we would get the error that a process with the same name had already been registered. To avoid this in your tests you need to use `mix test --no-start` to avoid the application starting polluting the tests. To do this every time a test is run, you can add an alias in your `mix.exs` file as such `aliases: [test: "test --no-start"]`.
 
 ## References
-
 Inspired by this tutorial https://www.youtube.com/watch?v=OG7e5SidbCU
-
-
