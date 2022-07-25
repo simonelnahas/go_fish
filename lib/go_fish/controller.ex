@@ -87,8 +87,14 @@ defmodule GoFish.Controller do
     {:noreply, Map.update!(state, :players_without_cards, fn x -> x - 1 end)}
   end
 
-  def handle_cast(:out_of_cards, state) when state.players_without_cards == (length(state.players)-1) and state.ocean_empty == true do
-    GoFish.Controller.game_over()
+  def handle_cast(:out_of_cards, state) when state.players_without_cards == (length(state.players)-1)
+  and state.ocean_empty == true
+  and state.game_state == :in_progress do
+      for name <- state.players do
+        GoFish.Player.stop(name)
+      end
+      GoFish.Ocean.stop()
+    {:noreply, %{:players => [], :game_state => :game_over, :players_without_cards => 0, :ocean_empty => true}}
   end
 
   def handle_cast(:out_of_cards, state) do
@@ -98,5 +104,8 @@ defmodule GoFish.Controller do
   def handle_cast(:stop, _state) do
     {:stop, :normal}
   end
+
+
+#TODO      add winner state and get controller to calculate winner when game is over.
 
 end

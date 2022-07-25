@@ -9,100 +9,102 @@ defmodule GoFishTest do
     :ok
   end
 
-  # test "take card on empty hands" do
-  #   assert :went_fishing == GoFish.Player.take_all_your(3, :john, :simon)
-  # end
+  test "take card on empty hands" do
+    assert :went_fishing == GoFish.Player.take_all_your(3, :john, :simon)
+  end
 
-  # test "draw 7 cards" do
-  #   assert :got_cards == GoFish.Player.draw_cards(:simon, 7)
-  #   assert %{:hand => hand} = GoFish.Player.get_state(:simon)
-  #   assert 3 == length(hand) # only 3 cards in the hand since the first 4 cards of the sorted deck will form a book
-  # end
-
-
-  # test "draw cards and give me all your" do
-  #   assert :got_cards == GoFish.Player.draw_cards(:simon, 52)
-  #   case GoFish.Player.take_all_your(3, :john, :simon) do
-  #     {:matches, matches} ->
-  #         Enum.map(matches, fn card -> assert 3 == card.value end)
-  #     _ -> :ok
-  #   end
-  # end
+  test "draw 7 cards" do
+    assert :got_cards == GoFish.Player.draw_cards(:simon, 7)
+    assert %{:hand => hand} = GoFish.Player.get_state(:simon)
+    assert 3 == length(hand) # only 3 cards in the hand since the first 4 cards of the sorted deck will form a book
+  end
 
 
-  # test "draw more cards than available in ocean" do
-  #   assert :got_cards == GoFish.Player.draw_cards(:simon, 55)
-  # end
+  test "draw cards and give me all your" do
+    assert :got_cards == GoFish.Player.draw_cards(:simon, 52)
+    case GoFish.Player.take_all_your(3, :john, :simon) do
+      {:matches, matches} ->
+          Enum.map(matches, fn card -> assert 3 == card.value end)
+      _ -> :ok
+    end
+  end
 
-  # test "draw cards on empty ocean" do
-  #   assert :got_cards == GoFish.Player.draw_cards(:simon, 52)
-  #   assert :no_cards_left == GoFish.Player.draw_cards(:john, 2)
-  # end
 
-  # def start_example_game() do
-  #   assert :got_cards == GoFish.Player.draw_cards(:simon, 7)
-  #   :timer.sleep(500)
-  #   assert :got_cards == GoFish.Player.draw_cards(:john, 7)
-  # end
+  test "draw more cards than available in ocean" do
+    assert :got_cards == GoFish.Player.draw_cards(:simon, 55)
+  end
 
-  # test "example game play" do
-  #   start_example_game()
-  #   assert {:got_cards, matches} = GoFish.Player.take_all_your(3, :john, :simon)
-  #   to_match =  [%GoFish.Ocean.Card{suit: :clubs, value: 3},
-  #                 %GoFish.Ocean.Card{suit: :diamonds, value: 3},
-  #                 %GoFish.Ocean.Card{suit: :spades, value: 3}]
+  test "draw cards on empty ocean" do
+    assert :got_cards == GoFish.Player.draw_cards(:simon, 52)
+    assert :no_cards_left == GoFish.Player.draw_cards(:john, 2)
+  end
 
-  #   assert Enum.all?(to_match, fn match -> match in matches end)
+  def start_example_game() do
+    assert :got_cards == GoFish.Player.draw_cards(:simon, 7)
+    :timer.sleep(500)
+    assert :got_cards == GoFish.Player.draw_cards(:john, 7)
+  end
 
-  #   assert :went_fishing = GoFish.Player.take_all_your(2, :john, :simon)
+  test "example game play" do
+    start_example_game()
+    assert {:got_cards, matches} = GoFish.Player.take_all_your(3, :john, :simon)
+    to_match =  [%GoFish.Ocean.Card{suit: :clubs, value: 3},
+                  %GoFish.Ocean.Card{suit: :diamonds, value: 3},
+                  %GoFish.Ocean.Card{suit: :spades, value: 3}]
 
-  #   assert {:got_cards, matches} = GoFish.Player.take_all_your(5, :simon, :john)
-  #   assert :went_fishing = GoFish.Player.take_all_your(6, :simon, :john)
+    assert Enum.all?(to_match, fn match -> match in matches end)
 
-  #   # Simon has the books for 2's and 5's
-  #   assert %{:books => simons_books} = GoFish.Player.get_state(:simon)
-  #   assert Enum.all?(simons_books, fn book -> book in [2, 5] end)
+    assert :went_fishing = GoFish.Player.take_all_your(2, :john, :simon)
 
-  #   # John has the books for 3's and 4's
-  #   assert %{:books => johns_books} = GoFish.Player.get_state(:john)
-  #   assert Enum.all?(johns_books, fn book -> book in [3, 4] end)
+    assert {:got_cards, _matches} = GoFish.Player.take_all_your(5, :simon, :john)
+    assert :went_fishing = GoFish.Player.take_all_your(6, :simon, :john)
 
-  # end
+    # Simon has the books for 2's and 5's
+    assert %{:books => simons_books} = GoFish.Player.get_state(:simon)
+    assert Enum.all?(simons_books, fn book -> book in [2, 5] end)
 
-  # test "creating books" do
-  #   assert :got_cards == GoFish.Player.draw_cards(:simon, 7) #gets 4 2's and 3 3's.
-  #   %{:hand => hand, :books => books} = GoFish.Player.get_state(:simon)
-  #   # assert that hand only contains three values, since the first form should have been made into a book.
-  #   assert 3 == length(hand)
-  #   # assert that we have a book of 2's
-  #   assert Enum.find(books, fn x -> x == 2 end)
-  # end
+    # John has the books for 3's and 4's
+    assert %{:books => johns_books} = GoFish.Player.get_state(:john)
+    assert Enum.all?(johns_books, fn book -> book in [3, 4] end)
 
-  # test "new game" do
-  #   GoFish.Controller.game_over()
-  #   assert :new_game == GoFish.Controller.start_game([:john, :simon])
-  # end
+  end
 
-  # test "out of cards" do
-  #   assert :got_cards == GoFish.Player.draw_cards(:simon, 2)
-  #   assert :got_cards == GoFish.Player.draw_cards(:john, 5)
-  #   assert {:got_cards, matches} = GoFish.Player.take_all_your(2, :john, :simon)
-  #   assert GoFish.Controller.query() == {:ok, %{game_state: :in_progress, players: [:simon, :john], players_without_cards: 1}}
-  #   assert :went_fishing == GoFish.Player.take_all_your(5, :john, :simon)
-  #   assert GoFish.Controller.query() == {:ok, %{game_state: :in_progress, players: [:simon, :john], players_without_cards: 2}}
-  #   assert :went_fishing == GoFish.Player.take_all_your(5, :simon, :john)
-  #   assert :went_fishing == GoFish.Player.take_all_your(5, :john, :simon)
-  #   assert GoFish.Controller.query() == {:ok, %{game_state: :in_progress, players: [:simon, :john], players_without_cards: 0}}
-  # end
+  test "creating books" do
+    assert :got_cards == GoFish.Player.draw_cards(:simon, 7) #gets 4 2's and 3 3's.
+    %{:hand => hand, :books => books} = GoFish.Player.get_state(:simon)
+    # assert that hand only contains three values, since the first form should have been made into a book.
+    assert 3 == length(hand)
+    # assert that we have a book of 2's
+    assert Enum.find(books, fn x -> x == 2 end)
+  end
+
+  test "new game" do
+    GoFish.Controller.game_over()
+    assert :new_game == GoFish.Controller.start_game([:john, :simon])
+  end
+
+  test "out of cards" do
+    assert :got_cards == GoFish.Player.draw_cards(:simon, 2)
+    assert :got_cards == GoFish.Player.draw_cards(:john, 5)
+    assert {:got_cards, _matches} = GoFish.Player.take_all_your(2, :john, :simon)
+    assert GoFish.Controller.query() == {:ok, %{game_state: :in_progress, players: [:simon, :john], players_without_cards: 1, ocean_empty: false}}
+    assert :went_fishing == GoFish.Player.take_all_your(5, :john, :simon)
+    assert GoFish.Controller.query() == {:ok, %{game_state: :in_progress, players: [:simon, :john], players_without_cards: 2, ocean_empty: false}}
+    assert :went_fishing == GoFish.Player.take_all_your(5, :simon, :john)
+    assert :went_fishing == GoFish.Player.take_all_your(5, :john, :simon)
+    assert GoFish.Controller.query() == {:ok, %{game_state: :in_progress, players: [:simon, :john], players_without_cards: 0, ocean_empty: false}}
+  end
 
   test "game over" do
-    assert :got_cards == GoFish.Player.draw_cards(:simon, 25)
-    assert :got_cards == GoFish.Player.draw_cards(:john, 25)
-    assert :went_fishing == GoFish.Player.take_all_your(2, :john, :simon)
-    assert :went_fishing == GoFish.Player.take_all_your(5, :simon, :john)
+    assert :got_cards == GoFish.Player.draw_cards(:simon, 26)
+    assert :got_cards == GoFish.Player.draw_cards(:john, 26)
     assert :no_cards_left == GoFish.Player.take_all_your(2, :john, :simon)
-    assert {:got_cards, matches} = GoFish.Player.take_all_your(14, :simon, :john)
-    assert GoFish.Controller.query() == {:ok, %{:players => [], :game_state => :game_over, :players_without_cards => 0}}
+    assert :no_cards_left == GoFish.Player.take_all_your(5, :simon, :john)
+    assert :no_cards_left = GoFish.Player.take_all_your(14, :simon, :john)
+    assert GoFish.Controller.query() == {:ok, %{game_state: :in_progress, players: [:simon, :john], players_without_cards: 0, ocean_empty: true}}
+    # John and Simon both have two 8s
+    assert {:got_cards, _matches} = GoFish.Player.take_all_your(8, :john, :simon)
+    assert GoFish.Controller.query() == {:ok, %{:players => [], :game_state => :game_over, :players_without_cards => 0, ocean_empty: true}}
   end
 
 end
