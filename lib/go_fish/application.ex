@@ -13,8 +13,10 @@ defmodule GoFish.Application do
     child_spec = [
       # Starts a worker by calling: GoFish.Worker.start_link(arg)
       {GoFish.Ocean, []},
+      {GoFish.Controller, []},
       Supervisor.child_spec({GoFish.Player, {:john, true}}, id: :john),
       Supervisor.child_spec({GoFish.Player, {:simon, false}}, id: :simon)
+
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

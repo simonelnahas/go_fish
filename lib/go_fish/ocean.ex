@@ -76,6 +76,7 @@ defmodule GoFish.Ocean do
   end
 
   def handle_call(:take_card, _from, []) do
+    GoFish.Controller.ocean_empty()
     {:reply, :no_cards_left, []}
   end
 

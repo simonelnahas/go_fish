@@ -19,10 +19,12 @@ end note
 
 John -> Simon: give_me_all_your(3)
 Simon --> John: [3 of clubs]
+Simon -> Controller: out_of_cards([4,5])
 John -> Simon: give_me_all_your(3)
 Simon --> John: go_fish
 John -> Ocean: take_card()
 Ocean --> John: [3 of hearts]
+Ocean -> Controller: out_of_cards()
 John -> John: save_book
 note right 
 John got a book and now doesn't have any cards.
@@ -31,21 +33,20 @@ The Ocean is empty.
 game is over
 end note
 
-John -> John: any_cards_left?()
-John --> John: {no, 10}
-John -> Simon: any_cards_left?()
-Simon --> John: {no, 4}
-John -> Ocean: any_cards_left?()
-Ocean --> John: no
-John -> John: the_game_is_over({:winner, :john})
-John -> Simon: the_game_is_over({:winner, :john})
-John -> Ocean: the_game_is_over({:winner, :john})
+John -> Controller: out_of_cards([3])
+Controller -> Controller: game_over
+Controller -> John: stop()
+Controller -> Simon: stop()
+Controller -> Ocean: stop()
+Ocean -> Controller: :ok
 
-note right 
-    Everyone has now set their :game_state to :game_over
+
+note right
+    Controller sets winner in its state
+    Controller has now set the :game_state to :game_over
 end note
 
-John -> Supervisor: restart_game
+John -> Controller: start_game()
 
 
 @enduml

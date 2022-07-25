@@ -5,11 +5,11 @@ defmodule GoFish.Player do
   # Client API
 
   def start_link({name, is_my_turn}) do
-    GenServer.start_link(__MODULE__, is_my_turn, name: name)
+    GenServer.start_link(__MODULE__, {name, is_my_turn}, name: name)
   end
 
-  def game_started(name) do
-    GenServer.cast(name, :start_game)
+  def make_turn(name) do
+    GenServer.cast(name, :make_turn)
   end
 
   def game_over(name) do
@@ -45,35 +45,46 @@ defmodule GoFish.Player do
       IO.puts("They didn't have the requested value so I go fishing")
       case GoFish.Ocean.take_card() do
           {:card, card} ->
-            IO.puts("I drew the card #{inspect(card)} from the ocean")
-            {:reply, :went_fishing, %{add_card(state,card) | :is_my_turn => false}}
+            if state.hand == [] do
+              IO.puts("got more cards")
+              GoFish.Controller.got_cards()
+              IO.puts("I drew the card #{inspect(card)} from the ocean")
+              {:reply, :went_fishing, %{add_card(state,card) | :is_my_turn => false}}
+            else
+              IO.puts("I drew the card #{inspect(card)} from the ocean")
+              {:reply, :went_fishing, %{add_card(state,card) | :is_my_turn => false}}
+            end
           :no_cards_left ->
             IO.puts("There are no cards left in the ocean")
-            #TODO: Handle game over.
             {:reply, :no_cards_left, state}
       end
     end
 
     def receive_matches(state, matches) do
-      IO.puts("Yay! I got the cards #{inspect(matches)}")
-      {:reply, {:got_cards, matches}, add_cards(state, matches)}
+      if state.hand == [] do
+        IO.puts("got more cards")
+        GoFish.Controller.got_cards()
+        IO.puts("Yay! I got the cards #{inspect(matches)}")
+        {:reply, {:got_cards, matches}, add_cards(state, matches)}
+      else
+        IO.puts("Yay! I got the cards #{inspect(matches)}")
+        {:reply, {:got_cards, matches}, add_cards(state, matches)}
+      end
     end
+
 
   # Server
 
   def get_initial_state(is_my_turn) do
-    %{:hand => [], :is_my_turn => is_my_turn, :books => [], :game_state => :in_progress}
+    %{:hand => [], :is_my_turn => is_my_turn, :books => []}
   end
 
-  def init(is_my_turn) do
+  def init({name,is_my_turn}) do
+    GoFish.Controller.new_player(name)
     {:ok,
       # initial state:
       get_initial_state(is_my_turn)
       }
-  end
-
-  def handle_cast(:start_game, state) do
-    GoFish.Ocean.
   end
 
   def handle_cast(:game_over, state) do
@@ -83,22 +94,13 @@ defmodule GoFish.Player do
       :game_over}
   end
 
-  def handle_cast(:stop, _state) do
-    {:stop, :normal}
+  def handle_cast(:make_turn, state) do
+    {:noreply, Map.update!(state, :is_my_turn, fn _x -> true end)}
   end
 
+  def handle_cast(:stop, _state) do
 
-  def get_matches_from_hand(hand, value) do
-    case Enum.group_by(hand, fn card -> card.value == value end) do
-      %{true => matches, false => new_hand} ->
-        %{:matches => matches, :new_hand => new_hand}
-      %{false => new_hand}  ->
-        %{:matches => [], :new_hand => new_hand}
-      %{true => matches}  ->
-        %{:matches => matches, :new_hand => []}
-      %{} ->
-        %{:matches => [], :new_hand => []}
-    end
+    {:stop, :normal}
   end
 
   def get_books(cards) do
@@ -143,6 +145,21 @@ defmodule GoFish.Player do
     else
       IO.puts("I tried to take cards, but it wasn't my turn")
       {:reply, :not_my_turn, state}
+    end
+  end
+
+  def get_matches_from_hand(hand, value) do
+    case Enum.group_by(hand, fn card -> card.value == value end) do
+      %{true => matches, false => new_hand} ->
+        %{:matches => matches, :new_hand => new_hand}
+      %{false => new_hand}  ->
+        %{:matches => [], :new_hand => new_hand}
+      %{true => matches}  ->
+        IO.puts("out of cards")
+        GoFish.Controller.out_of_cards()
+        %{:matches => matches, :new_hand => []}
+      %{} ->
+        %{:matches => [], :new_hand => []}
     end
   end
 
