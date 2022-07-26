@@ -34,6 +34,9 @@ defmodule GoFish.Ocean do
     GenServer.start_link(__MODULE__, nil, name: __MODULE__)
   end
 
+  def get_state() do
+    GenServer.call(__MODULE__, :get_state)
+  end
 
   def game_over() do
     GenServer.cast(__MODULE__, :game_over)
@@ -69,6 +72,10 @@ defmodule GoFish.Ocean do
 
   def handle_cast(:stop, _state) do
     {:stop, :normal}
+  end
+
+  def handle_call(:get_state, _from, state) do
+    {:reply, state, state}
   end
 
   def handle_call(:take_card, _from, [card|deck]) do

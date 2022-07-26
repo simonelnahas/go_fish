@@ -9,8 +9,8 @@ defmodule GoFish.Controller do
     GenServer.call(__MODULE__, {:new_player, player_name})
   end
 
-  def query() do
-    GenServer.call(__MODULE__, :query)
+  def get_state() do
+    GenServer.call(__MODULE__, :get_state)
   end
 
   def start_game(player_list) do
@@ -25,8 +25,8 @@ defmodule GoFish.Controller do
     GenServer.cast(__MODULE__, :ocean_empty)
   end
 
-  def got_cards() do
-    GenServer.cast(__MODULE__, :got_cards)
+  def hand_is_no_longer_empty() do
+    GenServer.cast(__MODULE__, :hand_is_no_longer_empty)
   end
 
   def out_of_cards() do
@@ -54,8 +54,8 @@ defmodule GoFish.Controller do
     {:reply, {:new_player_added, player_name}, Map.update!(state, :players, fn x -> [player_name|x] end)}
   end
 
-  def handle_call(:query, _from, state) do
-    {:reply, {:ok, state}, state}
+  def handle_call(:get_state, _from, state) do
+    {:reply, state, state}
   end
 
   def handle_call({:start_game, player_list}, _from, state) do
@@ -63,8 +63,8 @@ defmodule GoFish.Controller do
     for name <- player_list do
       GoFish.Player.start_link({name, false})
     end
-    GoFish.Player.make_turn(hd(player_list))
-    {:reply, :new_game, Map.update!(state, :game_state, fn _x -> :in_progress end)}
+    GoFish.Player.give_turn_to(hd(player_list))
+    {:reply, :new_game, Map.put(state, :game_state, :in_progress)}
   end
 
   def handle_call(:game_over, _from, state) when state.game_state == :in_progress do
@@ -83,13 +83,14 @@ defmodule GoFish.Controller do
     {:noreply, Map.update!(state, :ocean_empty, fn _x -> true end)}
   end
 
-  def handle_cast(:got_cards, state) do
+  def handle_cast(:hand_is_no_longer_empty, state) do
+    IO.puts("got more cards")
     {:noreply, Map.update!(state, :players_without_cards, fn x -> x - 1 end)}
   end
 
   def handle_cast(:out_of_cards, state) when state.players_without_cards == (length(state.players)-1)
   and state.ocean_empty == true
-  and state.game_state == :in_progress do
+  and state.game_state == :in_progress do #this is true when all players are out of cards, and the ocean is empty
       for name <- state.players do
         GoFish.Player.stop(name)
       end

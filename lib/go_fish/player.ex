@@ -8,12 +8,8 @@ defmodule GoFish.Player do
     GenServer.start_link(__MODULE__, {name, is_my_turn}, name: name)
   end
 
-  def make_turn(name) do
-    GenServer.cast(name, :make_turn)
-  end
-
-  def game_over(name) do
-    GenServer.cast(name, :game_over)
+  def give_turn_to(name) do
+    GenServer.cast(name, :give_turn_to)
   end
 
   def stop(name) do
@@ -39,39 +35,6 @@ defmodule GoFish.Player do
   end
 
 
-    # Helper functions
-
-    def go_fish(state) do
-      IO.puts("They didn't have the requested value so I go fishing")
-      case GoFish.Ocean.take_card() do
-          {:card, card} ->
-            if state.hand == [] do
-              IO.puts("got more cards")
-              GoFish.Controller.got_cards()
-              IO.puts("I drew the card #{inspect(card)} from the ocean")
-              {:reply, :went_fishing, %{add_card(state,card) | :is_my_turn => false}}
-            else
-              IO.puts("I drew the card #{inspect(card)} from the ocean")
-              {:reply, :went_fishing, %{add_card(state,card) | :is_my_turn => false}}
-            end
-          :no_cards_left ->
-            IO.puts("There are no cards left in the ocean")
-            {:reply, :no_cards_left, state}
-      end
-    end
-
-    def receive_matches(state, matches) do
-      if state.hand == [] do
-        IO.puts("got more cards")
-        GoFish.Controller.got_cards()
-        IO.puts("Yay! I got the cards #{inspect(matches)}")
-        {:reply, {:got_cards, matches}, add_cards(state, matches)}
-      else
-        IO.puts("Yay! I got the cards #{inspect(matches)}")
-        {:reply, {:got_cards, matches}, add_cards(state, matches)}
-      end
-    end
-
 
   # Server
 
@@ -87,19 +50,11 @@ defmodule GoFish.Player do
       }
   end
 
-  def handle_cast(:game_over, state) do
-    IO.puts("Game Over. Score: #{Map.get(state, :books)}")
-    GoFish.Ocean.game_over()
-    {:noreply,
-      :game_over}
-  end
-
-  def handle_cast(:make_turn, state) do
-    {:noreply, Map.update!(state, :is_my_turn, fn _x -> true end)}
+  def handle_cast(:give_turn_to, state) do
+    {:noreply, Map.put(state, :is_my_turn, true)}
   end
 
   def handle_cast(:stop, _state) do
-
     {:stop, :normal}
   end
 
@@ -132,6 +87,32 @@ defmodule GoFish.Player do
 
   def add_cards(state, cards) do
     List.foldl(cards, state, & add_card(&2, &1))
+  end
+
+  def go_fish(state) do
+    IO.puts("They didn't have the requested value so I go fishing")
+    case GoFish.Ocean.take_card() do
+        {:card, card} ->
+          if state.hand == [] do
+            GoFish.Controller.hand_is_no_longer_empty()
+          end
+          IO.puts("I drew the card #{inspect(card)} from the ocean")
+          {:reply, :went_fishing, %{add_card(state,card) | :is_my_turn => false}}
+        :no_cards_left ->
+          IO.puts("There are no cards left in the ocean")
+          {:reply, :no_cards_left, state}
+    end
+  end
+
+  def receive_matches(state, matches) do
+    if state.hand == [] do
+      IO.puts("got more cards")
+      GoFish.Controller.hand_is_no_longer_empty()
+      IO.puts("Yay! I got the cards #{inspect(matches)}")
+      {:reply, {:got_cards, matches}, add_cards(state, matches)}
+    end
+    IO.puts("Yay! I got the cards #{inspect(matches)}")
+    {:reply, {:got_cards, matches}, add_cards(state, matches)}
   end
 
   def handle_call({:take_all_your, num, giver}, _from, state) do
