@@ -70,6 +70,7 @@ defmodule GoFish.Player do
     %{:hand => hand} = state
     books = get_books(hand)
     if books != [] do
+      GoFish.Controller.book_made()
       IO.puts("collected books: #{hd(books)}")
     end
     state_with_books = %{state | :books => books ++ Map.get(state,:books)}
@@ -94,7 +95,6 @@ defmodule GoFish.Player do
     case GoFish.Ocean.take_card() do
         {:card, card} ->
           if state.hand == [] do
-            GoFish.Controller.hand_is_no_longer_empty()
           end
           IO.puts("I drew the card #{inspect(card)} from the ocean")
           {:reply, :went_fishing, %{add_card(state,card) | :is_my_turn => false}}
@@ -106,8 +106,6 @@ defmodule GoFish.Player do
 
   def receive_matches(state, matches) do
     if state.hand == [] do
-      IO.puts("got more cards")
-      GoFish.Controller.hand_is_no_longer_empty()
       IO.puts("Yay! I got the cards #{inspect(matches)}")
       {:reply, {:got_cards, matches}, add_cards(state, matches)}
     end
@@ -136,8 +134,6 @@ defmodule GoFish.Player do
       %{false => new_hand}  ->
         %{:matches => [], :new_hand => new_hand}
       %{true => matches}  ->
-        IO.puts("out of cards")
-        GoFish.Controller.out_of_cards()
         %{:matches => matches, :new_hand => []}
       %{} ->
         %{:matches => [], :new_hand => []}

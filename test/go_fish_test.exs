@@ -85,33 +85,17 @@ defmodule GoFishTest do
     assert %{books: [], hand: [], is_my_turn: false} == GoFish.Player.get_state(:simon)
   end
 
-  test "out of cards" do
-    assert :got_cards == GoFish.Player.draw_cards(:simon, 2)
-    assert :got_cards == GoFish.Player.draw_cards(:john, 5)
-    assert {:got_cards, _matches} = GoFish.Player.take_all_your(2, :john, :simon)
-    # John has taken all of Simon's 2s, leaving Simon without cards.
-    assert %{:players_without_cards => 1} = GoFish.Controller.get_state()
-    assert :went_fishing == GoFish.Player.take_all_your(5, :john, :simon)
-    # John has gone fishing and picked up a 3. This completes his book and leaves him without cards.
-    assert %{:players_without_cards => 2} = GoFish.Controller.get_state()
-    assert :went_fishing == GoFish.Player.take_all_your(5, :simon, :john)
-    assert :went_fishing == GoFish.Player.take_all_your(5, :john, :simon)
-    # Both Simon and John have gone fishing, and have cards in their hands again.
-    assert %{:players_without_cards => 0} = GoFish.Controller.get_state()
-  end
-
   test "game over" do
     assert :got_cards == GoFish.Player.draw_cards(:simon, 26)
     assert :got_cards == GoFish.Player.draw_cards(:john, 26)
     # Ocean is now empty
     assert :no_cards_left == GoFish.Player.take_all_your(2, :john, :simon)
-    assert :no_cards_left == GoFish.Player.take_all_your(5, :simon, :john)
     assert :no_cards_left = GoFish.Player.take_all_your(14, :simon, :john)
-    assert %{:players_without_cards => 0, :ocean_empty => true} = GoFish.Controller.get_state()
+    assert %{:ocean_empty => true} = GoFish.Controller.get_state()
     # John and Simon both only have two 8s
     assert {:got_cards, _matches} = GoFish.Player.take_all_your(8, :john, :simon)
     # John gets the final book and the game ends
-    assert %{:players => [], :game_state => :game_over, :players_without_cards => 0, :ocean_empty => true} = GoFish.Controller.get_state()
+    assert %{:players => [], :game_state => :game_over, :ocean_empty => true, :winner => {:john, 7}} = GoFish.Controller.get_state()
   end
 
 end
