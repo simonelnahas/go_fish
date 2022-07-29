@@ -18,10 +18,10 @@ Ocean has 52 cards
 It is John's turn
 end note
 
-John -> Ocean: draw_cards(5)
-Ocean --> John: [3 of spades, 3 of diamonds, 5 of hearts, 6 of clubs, 8 of diamonds]
-Simon -> Ocean: draw_cards(5)
-Ocean --> Simon: [3 of clubs, 5 of clubs, 6 of spades, 8 of hearts, 9 of spades]
+John -> Ocean: draw_cards(7)
+Ocean --> John: [3 of spades, 3 of diamonds, 4 of hearts, 6 of clubs, 8 of diamonds, 9 of clubs, 10 of hearts]
+Simon -> Ocean: draw_cards(7)
+Ocean --> Simon: [3 of clubs, 5 of clubs, 6 of spades, 8 of hearts, 9 of spades, 11 of diamonds, 11 of clubs]
 John -> Simon: give_me_all_your(3)
 Simon --> John: [3 of clubs]
 John -> Simon: give_me_all_your(4)
