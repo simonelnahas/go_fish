@@ -19,6 +19,7 @@ defmodule GoFishWeb.Router do
 
     get "/", PageController, :index
     put "/draw_card/:player", PageController, :draw_card
+    get "/ask_for_card/", PageController, :ask_for_card
   end
 
   # Other scopes may use custom stacks.

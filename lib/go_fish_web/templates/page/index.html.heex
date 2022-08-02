@@ -1,19 +1,52 @@
 <section class="phx-hero">
-  <h1><%= gettext "Welcome to %{name}!", name: "Phoenix" %></h1>
-  <p>Peace of mind from prototype to production</p>
+  <h1><%= gettext "Welcome to %{name}!", name: "Go Fish" %></h1>
+  <p>Peace of mind from Ocean to Books</p>
 </section>
 
 <section class="row">
   <article class="column">
-    John: 
-    <%= for card <- IO.inspect(Map.get(@john,:hand)) do %> 
-      <%= card.value %> of <%= card.suit %>,
+
+<div style="display:flex; justify-content: space-between">
+    <%= for {player, opponent} <- [{:john, :simon}, {:simon, :john}] do %>
+      <div style="width:100%; margin: 10px">
+        <%# TODO: refactor into a player component %>
+        Hey <%= player %> 
+        <%= if (get_in(@player_states,[player, :isMyTurn])) do%>
+            <span>🕺</span> 
+            <br/>
+            <%=link("Draw Card", to: "draw_card/#{player}", method: :put) %> 
+            <%# TODO remove this draw card button, since it shouldn't be allowed to use it %>
+            <br/>
+            <form action="/ask_for_card" method="get" >
+              <input type="hidden" name="taker" value={player}>
+              <input type="number" name="value" max="14" min="2" >
+              <div style="display:flex">
+                <input type="submit" value="Ask for">
+                <input type="hidden" name="giver" value={opponent}>
+              </div>
+            </form>
+          <% else %>
+            <span>🛑</span>
+        <% end %>
+        
+
+        <br/>
+        Cards in your hand: <br/>
+        <%= for card <- get_in(@player_states, [player, :hand])
+                        |> Enum.sort(&(&1.value >= &2.value)) # Sort by value 
+                        do %> 
+          <%= card.value %> of <%= card.suit %> <br/>
+          <%# TODO: make card component to display them nicely %>
+        <% end %>
+        <br/>
+
+        Books: <br/>
+        <%= for book <- get_in(@player_states, [player, :books]) do %>
+          <%= book %>'s
+        <% end %>
+      </div>
     <% end %>
-    <br/>
-
-    <%=link("Draw Card", to: "draw_card/#{:john}", method: :put) %>
+    </div>
     
-
-
   </article>
 </section>
