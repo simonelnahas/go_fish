@@ -13,13 +13,15 @@ defmodule GoFish.Application do
     child_spec = [
       # Starts a worker by calling: GoFish.Worker.start_link(arg)
       {GoFish.Ocean, []},
+      {GoFish.Controller, []},
       Supervisor.child_spec({GoFish.Player, {:john, true}}, id: :john),
       Supervisor.child_spec({GoFish.Player, {:simon, false}}, id: :simon)
+
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
     # for other strategies and supported options
-    opts = [strategy: :one_for_one, name: GoFish.Supervisor]
+    opts = [strategy: :one_for_all, name: GoFish.Supervisor]
     Supervisor.start_link(child_spec, opts)
   end
 end

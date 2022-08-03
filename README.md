@@ -7,6 +7,9 @@ Rules:
 - The player whose turn it is to play asks another player for their cards of a particular face value. For example, Alice may ask, "Bob, do you have any threes?" Alice must have at least one card of the rank she requested. Bob must hand over all cards of that rank if possible and is responsible for delivering the cards to the player no matter their location. If he has none, Bob tells Alice to "go fish," and Alice draws a card from the pool and places it in her own hand. Then it is Bob's turn, since the turn switches to the person saying "go fish." When any player at any time has four cards of one face value, it forms a book, and the cards must be placed face up in front of that player. When all sets of cards have been laid down in books, the game ends. The player with the most books wins.
 
 
+variation:
+- Instead of going round in a circle the turn switches to the person saying go fish.
+
 ## Notes for upcoming blog post.
 
 Learnings:

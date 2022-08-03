@@ -16,7 +16,6 @@ defmodule GoFish.MixProject do
   def application do
     [
       extra_applications: [:logger],
-
       mod: {GoFish.Application, []}
     ]
   end
