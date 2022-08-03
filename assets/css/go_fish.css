@@ -8,10 +8,12 @@
     width: 75px; 
     padding:5px 3px;
     box-shadow: 1px 4px 2px;
+    
 }
 
 .card-hover {
-    transition: box-shadow 0.5s ease-in-out, translate 0.5s ease-in-out;                 
+    transition: box-shadow 0.5s ease-in-out, translate 0.5s ease-in-out;    
+    z-index: 0;             
 }
 
 .card-hover:hover {
