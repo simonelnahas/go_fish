@@ -8,22 +8,18 @@ defmodule GoFish.Application do
   @impl true
   def start(_type, _args) do
     children = [
-      # Start the Telemetry supervisor
       GoFishWeb.Telemetry,
-      # Start the PubSub system
       {Phoenix.PubSub, name: GoFish.PubSub},
-      # Start the Endpoint (http/https)
       GoFishWeb.Endpoint,
-      # Start a worker by calling: GoFish.Worker.start_link(arg)
-      # {GoFish.Worker, arg}
       {GoFish.Ocean, []}, # TODO separate into their own supervisor
+      {GoFish.Controller, []},
       Supervisor.child_spec({GoFish.Player, {:john, true}}, id: :john),
       Supervisor.child_spec({GoFish.Player, {:simon, false}}, id: :simon)
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
     # for other strategies and supported options
-    opts = [strategy: :one_for_one, name: GoFish.Supervisor]
+    opts = [strategy: :one_for_all, name: GoFish.Supervisor]
     Supervisor.start_link(children, opts)
   end
 

@@ -1,0 +1,59 @@
+@startuml Go Fish Game
+
+title Two-Player Go Fish Game
+
+participant Controller order 1
+participant John order 2
+participant Simon order 3
+participant Ocean order 4
+
+John -> Controller: new_player(John)
+Simon -> Controller: new_player(Simon)
+
+note right
+Current state:
+John has no cards
+Simon has no cards
+Ocean has 52 cards
+It is John's turn
+end note
+
+John -> Ocean: draw_cards(7)
+Ocean --> John: [3 of spades, 3 of diamonds, 4 of hearts, 6 of clubs, 8 of diamonds, 9 of clubs, 10 of hearts]
+Simon -> Ocean: draw_cards(7)
+Ocean --> Simon: [3 of clubs, 5 of clubs, 6 of spades, 8 of hearts, 9 of spades, 11 of diamonds, 11 of clubs]
+John -> Simon: give_me_all_your(3)
+Simon --> John: [3 of clubs]
+John -> Simon: give_me_all_your(4)
+Simon --> John: go_fish
+John -> Ocean: take_card()
+Ocean --> John: [3 of hearts]
+John -> Controller: book_made()
+
+note across
+Simon and John continue to request cards from one another
+and draw from the ocean when told to go fish
+Play continues this way until 12 books have been made
+end note
+
+John -> Simon: give_me_all_your(9)
+Simon --> John: [9 of spades]
+John -> Controller: book_made()
+
+note right
+Controller has now counted 13 books.
+end note
+
+Controller -> John: stop()
+Controller -> Simon: stop()
+Controller -> Ocean: stop()
+Controller -> Controller: winner(John)
+
+
+note right
+    Controller sets winner in its state to John
+    Controller sets the game_state to game_over
+end note
+
+
+@enduml
