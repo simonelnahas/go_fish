@@ -33,11 +33,24 @@
 
         <br/>
         Cards in your hand: <br/>
-        <div>
+        <div style="display:flex">
           <%= for card <- get_in(@player_states, [player, :hand])
                           |> Enum.sort(&(&1.value >= &2.value)) # Sort by value 
                           do %> 
-            <%= card.value %> of <%= card.suit %> <br/>
+            <div style="border:1px solid; 
+                        border-radius:5px;
+                        margin-right: -40px; 
+                        background-color:white; 
+                        height: 100px; 
+                        width: 75px; 
+                        padding:5px 3px
+                         ">
+              <div style="display:flex; flex-direction: column; align-items: center; width: 25px">
+                <span style="line-height:1"> <%= card.value %> </span>
+                <br/>
+                <%= suit_to_emoji(card.suit) %> 
+              </div>
+            </div>
             <%# TODO: make card component to display them nicely %>
           <% end %>
         </div>
