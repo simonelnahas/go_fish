@@ -13,35 +13,35 @@
                   Choose the card you want to ask for: <br/> 
                 <% end %>
               <% end %>
-                  <div style="display:flex">
-                    <%= for card <- get_in(@player_states, [player, :hand])
-                                    |> Enum.sort(&(&1.value >= &2.value)) # Sort by value 
-                                    do %> 
-                      <a href={if get_in(@player_states,[player, :isMyTurn]), do: "/ask_for_card?taker=" <> to_string(player) <> "&giver=" <> to_string(opponent) <> "&value=" <> to_string(card.value)}>
-                        <div class={"playing-card " <> if (get_in(@player_states,[player, :isMyTurn])) do "card-hover" else "" end}  >
-                          <div class="playing-card-inner">
-                            <span style={"line-height:1; font-weight:500; color:" <> suit_to_color(card.suit)}> <%= card.value %> </span>
-                            <br/>
-                            <%= suit_to_emoji(card.suit) %> 
-                          </div>
-                        </div>
-                      </a>
-                      <%# TODO: make card component %>
-                    <% end %>
-                  </div>
-                  <br/>
-                  <%= if (get_in(@player_states,[player, :isMyTurn])) and Enum.empty?(get_in(@player_states, [player, :hand])) do %>
-                    <button style="background-color:#bddef6;" >
-                      <%=link("Draw Card", to: "draw_card/#{player}", method: :get) %> 
-                      <%# FIXME: Draws only 3 cards initially %>
-                    </button>
-                    <%# TODO remove this draw card button, since it shouldn't be allowed to use it %>
-                  <% end %>
+              <div style="display:flex; flex-flow:wrap; row-gap: 10px; padding-right: 30px; column-gap:-20px">
+                <%= for card <- get_in(@player_states, [player, :hand])
+                                |> Enum.sort(&(&1.value >= &2.value)) # Sort by value 
+                                do %> 
+                  <a href={if get_in(@player_states,[player, :isMyTurn]), do: "/ask_for_card?taker=" <> to_string(player) <> "&giver=" <> to_string(opponent) <> "&value=" <> to_string(card.value)}>
+                    <div class={"playing-card " <> if (get_in(@player_states,[player, :isMyTurn])) do "card-hover" else "" end}  >
+                      <div class="playing-card-inner">
+                        <span style={"line-height:1; font-weight:500; color:" <> suit_to_color(card.suit)}> <%= card.value %> </span>
+                        <br/>
+                        <%= suit_to_emoji(card.suit) %> 
+                      </div>
+                    </div>
+                  </a>
+                  <%# TODO: make card component %>
+                <% end %>
+              </div>
               <br/>
-              Collected books: <br/>
-              <%= for book <- get_in(@player_states, [player, :books]) do %>
-                <%= book %>'s
+              <%= if (get_in(@player_states,[player, :isMyTurn])) and Enum.empty?(get_in(@player_states, [player, :hand])) do %>
+                <button style="background-color:#bddef6;" >
+                  <%=link("Draw Card", to: "draw_card/#{player}", method: :get) %> 
+                  <%# FIXME: Draws only 3 cards initially %>
+                </button>
+                <%# TODO remove this draw card button, since it shouldn't be allowed to use it %>
               <% end %>
+          <br/>
+          Collected books: <br/>
+          <%= for book <- get_in(@player_states, [player, :books]) do %>
+            <%= book %>'s
+          <% end %>
         </div>
       <% end %>   
     </div>
