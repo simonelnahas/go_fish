@@ -21,7 +21,7 @@ defmodule GoFish.Application do
 
     # See https://hexdocs.pm/elixir/Supervisor.html
     # for other strategies and supported options
-    opts = [strategy: :all_for_one, name: GoFish.Supervisor]
+    opts = [strategy: :one_for_all, name: GoFish.Supervisor]
     Supervisor.start_link(child_spec, opts)
   end
 end
