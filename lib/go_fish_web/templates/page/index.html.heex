@@ -3,7 +3,7 @@
 
 <div style="display:flex; justify-content: space-between">
     <%= for {player, opponent} <- [{:john, :simon}, {:simon, :john}] do %>
-      <div style="width:100%; margin: 10px">
+      <div style="width:100%; margin: 10px; border: 1px black">
         <%# TODO: refactor into a player component %>
         <h1> Hey <%= uppercase(player) %> </h1>
         <%= if (get_in(@player_states,[player, :isMyTurn])) do%>
@@ -37,16 +37,9 @@
           <%= for card <- get_in(@player_states, [player, :hand])
                           |> Enum.sort(&(&1.value >= &2.value)) # Sort by value 
                           do %> 
-            <div style="border:1px solid; 
-                        border-radius:5px;
-                        margin-right: -40px; 
-                        background-color:white; 
-                        height: 100px; 
-                        width: 75px; 
-                        padding:5px 3px
-                         ">
+            <div class="playing-card">
               <div style="display:flex; flex-direction: column; align-items: center; width: 25px">
-                <span style="line-height:1"> <%= card.value %> </span>
+                <span style={"line-height:1; font-weight:500; color:" <> suit_to_color(card.suit)} > <%= card.value %> </span>
                 <br/>
                 <%= suit_to_emoji(card.suit) %> 
               </div>
