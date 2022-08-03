@@ -18,7 +18,7 @@ defmodule GoFishWeb.Router do
     pipe_through :browser
 
     get "/", PageController, :index
-    put "/draw_card/:player", PageController, :draw_card
+    get "/draw_card/:player", PageController, :draw_card
     get "/ask_for_card/", PageController, :ask_for_card
   end
 

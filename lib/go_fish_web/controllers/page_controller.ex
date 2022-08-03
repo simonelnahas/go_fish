@@ -19,7 +19,6 @@ defmodule GoFishWeb.PageController do
     IO.puts("value: #{value}")
     GoFish.Player.take_all_your(value, String.to_existing_atom(taker), String.to_existing_atom(giver)) #TODO consider if we can make this more concise.
     redirect(conn, to: "/")
-    #FIXME: It works in IEX, but not via this call. We do get the proper values out
   end
 
 

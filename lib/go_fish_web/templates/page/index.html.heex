@@ -7,43 +7,31 @@
         <%# TODO: refactor into a player component %>
         <h1> Hey <%= uppercase(player) %> </h1>
         <%= if (get_in(@player_states,[player, :isMyTurn])) do%>
+            It's your turn!
             <br/>
             <button style="background-color:red;" >
-            <%=link("Draw Card", to: "draw_card/#{player}", method: :put) %> 
+              <%=link("Draw Card", to: "draw_card/#{player}", method: :get) %> 
             </button>
             <%# TODO remove this draw card button, since it shouldn't be allowed to use it %>
             <br/>
-            <form action="/ask_for_card" method="get" >
-              <input type="hidden" name="taker" value={player}>
-              <input type="hidden" name="giver" value={opponent}>
-              <div style="border:1px solid; border-radius:10px; padding: 15px 10px 0">
-                <div style="display:flex; align-content:center ">
-                  Ask  
-                  <%# TODO: capitalize first letter of name %>
-                  <%= uppercase(opponent) %> for all his cards of rank:
-                  <input type="number" name="value" max="14" min="2" style="margin-left: 5px; width:80px">
-                </div>
-                <input type="submit" value="Ask" style="margin-left: 10px">
-              </div>
-            </form>
-          <% else %>
+           
         <% end %>
-        
-        
 
         <br/>
-        Cards in your hand: <br/>
+        Cards in your hand. Choose the card you want to ask for: <br/>
         <div style="display:flex">
           <%= for card <- get_in(@player_states, [player, :hand])
                           |> Enum.sort(&(&1.value >= &2.value)) # Sort by value 
                           do %> 
-            <div class="playing-card">
-              <div style="display:flex; flex-direction: column; align-items: center; width: 25px">
-                <span style={"line-height:1; font-weight:500; color:" <> suit_to_color(card.suit)} > <%= card.value %> </span>
-                <br/>
-                <%= suit_to_emoji(card.suit) %> 
+            <a href={if get_in(@player_states,[player, :isMyTurn]), do: "/ask_for_card?taker=" <> to_string(player) <> "&giver=" <> to_string(opponent) <> "&value=" <> to_string(card.value)}>
+              <div class={"playing-card " <> if (get_in(@player_states,[player, :isMyTurn])) do "card-hover" else "" end}  >
+                <div class="playing-card-inner">
+                  <span style={"line-height:1; font-weight:500; color:" <> suit_to_color(card.suit)}> <%= card.value %> </span>
+                  <br/>
+                  <%= suit_to_emoji(card.suit) %> 
+                </div>
               </div>
-            </div>
+            </a>
             <%# TODO: make card component to display them nicely %>
           <% end %>
         </div>

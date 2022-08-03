@@ -1,4 +1,5 @@
 .playing-card {
+    color: black;
     border:1px solid; 
     border-radius:5px;
     margin-right: -40px; 
@@ -6,12 +7,22 @@
     height: 100px; 
     width: 75px; 
     padding:5px 3px;
-    box-shadow: 1px 4px 2px    ;
-    transition: all 0.5s ease-in-out;                 
+    box-shadow: 1px 4px 2px;
 }
 
-.playing-card:hover {
+.card-hover {
+    transition: box-shadow 0.5s ease-in-out, translate 0.5s ease-in-out;                 
+}
+
+.card-hover:hover {
     box-shadow: 1px 20px 20px;
     translate: 0 -10px;
-    z-index: 0
+    z-index: 20
+}
+
+.playing-card-inner {
+    display:flex; 
+    flex-direction: column; 
+    align-items: center; 
+    width: 25px;
 }
