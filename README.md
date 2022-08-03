@@ -23,7 +23,7 @@ Ready to run in production? Please [check our deployment guides](https://hexdocs
 - [x] Website UI
 - [ ] Support for playing across multiple clients
 - [ ] Support for more than 2 players [#6](https://github.com/simonelnahas/go_fish/issues/6)
-- [ ] LiveView update of Game State #8
+- [ ] LiveView update of Game State [#8](https://github.com/simonelnahas/go_fish/issues/8)
 
 
 ## References
