@@ -1,8 +1,3 @@
-<section class="phx-hero">
-  <h1><%= gettext "Welcome to %{name}!", name: "Go Fish" %></h1>
-  <p>Peace of mind from Ocean to Books</p>
-</section>
-
 <section class="row">
   <article class="column">
 
@@ -10,34 +5,42 @@
     <%= for {player, opponent} <- [{:john, :simon}, {:simon, :john}] do %>
       <div style="width:100%; margin: 10px">
         <%# TODO: refactor into a player component %>
-        Hey <%= player %> 
+        <h1> Hey <%= uppercase(player) %> </h1>
         <%= if (get_in(@player_states,[player, :isMyTurn])) do%>
-            <span>🕺</span> 
             <br/>
+            <button style="background-color:red;" >
             <%=link("Draw Card", to: "draw_card/#{player}", method: :put) %> 
+            </button>
             <%# TODO remove this draw card button, since it shouldn't be allowed to use it %>
             <br/>
             <form action="/ask_for_card" method="get" >
               <input type="hidden" name="taker" value={player}>
-              <input type="number" name="value" max="14" min="2" >
-              <div style="display:flex">
-                <input type="submit" value="Ask for">
-                <input type="hidden" name="giver" value={opponent}>
+              <input type="hidden" name="giver" value={opponent}>
+              <div style="border:1px solid; border-radius:10px; padding: 15px 10px 0">
+                <div style="display:flex; align-content:center ">
+                  Ask  
+                  <%# TODO: capitalize first letter of name %>
+                  <%= uppercase(opponent) %> for all his cards of rank:
+                  <input type="number" name="value" max="14" min="2" style="margin-left: 5px; width:80px">
+                </div>
+                <input type="submit" value="Ask" style="margin-left: 10px">
               </div>
             </form>
           <% else %>
-            <span>🛑</span>
         <% end %>
+        
         
 
         <br/>
         Cards in your hand: <br/>
-        <%= for card <- get_in(@player_states, [player, :hand])
-                        |> Enum.sort(&(&1.value >= &2.value)) # Sort by value 
-                        do %> 
-          <%= card.value %> of <%= card.suit %> <br/>
-          <%# TODO: make card component to display them nicely %>
-        <% end %>
+        <div>
+          <%= for card <- get_in(@player_states, [player, :hand])
+                          |> Enum.sort(&(&1.value >= &2.value)) # Sort by value 
+                          do %> 
+            <%= card.value %> of <%= card.suit %> <br/>
+            <%# TODO: make card component to display them nicely %>
+          <% end %>
+        </div>
         <br/>
 
         Books: <br/>
