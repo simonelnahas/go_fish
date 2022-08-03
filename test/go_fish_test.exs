@@ -1,5 +1,6 @@
 defmodule GoFishTest do
-  use ExUnit.Case
+  require Logger
+  use ExUnit.Case, async: false
 
   setup do
     assert start_supervised!({GoFish.Ocean, :sorted})
@@ -10,10 +11,12 @@ defmodule GoFishTest do
   end
 
   test "take card on empty hands" do
+    Logger.debug("Test: take card on empty hands")
     assert :went_fishing == GoFish.Player.take_all_your(3, :john, :simon)
   end
 
   test "draw 7 cards" do
+    Logger.debug("Test: draw 7 cards")
     assert :got_cards == GoFish.Player.draw_cards(:simon, 7)
     assert %{:hand => hand} = GoFish.Player.get_state(:simon)
     assert 3 == length(hand) # only 3 cards in the hand since the first 4 cards of the sorted deck will form a book
@@ -21,21 +24,28 @@ defmodule GoFishTest do
 
 
   test "draw cards and give me all your" do
-    assert :got_cards == GoFish.Player.draw_cards(:simon, 52)
-    case GoFish.Player.take_all_your(3, :john, :simon) do
+    Logger.debug("Test: draw cards and give me all your")
+    assert :got_cards == GoFish.Player.draw_cards(:simon, 7)
+    case GoFish.Player.take_all_your(4, :john, :simon) do
       {:matches, matches} ->
-          Enum.map(matches, fn card -> assert 3 == card.value end)
+          Enum.map(matches, fn card -> assert 4 == card.value end)
       _ -> :ok
     end
   end
 
 
   test "draw more cards than available in ocean" do
+    Logger.debug("Test: draw more cards than available in ocean")
     assert :got_cards == GoFish.Player.draw_cards(:simon, 55)
   end
 
   test "draw cards on empty ocean" do
-    assert :got_cards == GoFish.Player.draw_cards(:simon, 52)
+    Logger.debug("Test: draw cards on empty ocean")
+    assert :got_cards == GoFish.Player.draw_cards(:simon, 10)
+    assert :got_cards == GoFish.Player.draw_cards(:john, 10)
+    assert :got_cards == GoFish.Player.draw_cards(:simon, 10)
+    assert :got_cards == GoFish.Player.draw_cards(:john, 10)
+    assert :got_cards == GoFish.Player.draw_cards(:simon, 12)
     assert :no_cards_left == GoFish.Player.draw_cards(:john, 2)
   end
 
@@ -46,6 +56,7 @@ defmodule GoFishTest do
   end
 
   test "example game play" do
+    Logger.debug("Test: example game play")
     start_example_game()
     assert {:got_cards, matches} = GoFish.Player.take_all_your(3, :john, :simon)
     to_match =  [%GoFish.Ocean.Card{suit: :clubs, value: 3},
@@ -70,6 +81,7 @@ defmodule GoFishTest do
   end
 
   test "creating books" do
+    Logger.debug("Test: creating books")
     assert :got_cards == GoFish.Player.draw_cards(:simon, 7) #gets 4 2's and 3 3's.
     %{:hand => hand, :books => books} = GoFish.Player.get_state(:simon)
     # assert that hand only contains three values, since the first form should have been made into a book.
@@ -79,6 +91,7 @@ defmodule GoFishTest do
   end
 
   test "new game" do
+    Logger.debug("Test: new game")
     assert :new_game == GoFish.Controller.start_game([:john, :simon])
     assert length(GoFish.Ocean.get_state()) == 52
     assert %{books: [], hand: [], is_my_turn: true} == GoFish.Player.get_state(:john)
@@ -86,6 +99,7 @@ defmodule GoFishTest do
   end
 
   test "game over" do
+    Logger.debug("Test: game over")
     assert :got_cards == GoFish.Player.draw_cards(:simon, 26)
     assert :got_cards == GoFish.Player.draw_cards(:john, 26)
     # Ocean is now empty
