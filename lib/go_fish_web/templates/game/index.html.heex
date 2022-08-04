@@ -1,6 +1,6 @@
 <section class="row">
   <article class="column">
-    <div style="display:flex; justify-content: space-between">
+    <div style="display:flex; justify-content: space-between; flex-flow: wrap; ">
         <%= for {player, opponent} <- [{:john, :simon}, {:simon, :john}] do %>
           <div style="width:100%; margin: 10px; border: 1px solid black; border-radius: 15px; padding: 10px">
             <%# TODO: refactor into a player component %>

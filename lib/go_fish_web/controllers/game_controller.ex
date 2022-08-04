@@ -1,10 +1,11 @@
-defmodule GoFishWeb.PageController do
+defmodule GoFishWeb.GameController do
   use GoFishWeb, :controller
 
   def index(conn, _params) do
-    render(conn, "index.html",player_states: %{:john => GoFish.Player.get_state(:john),
-                                         :simon => GoFish.Player.get_state(:simon)
-    })
+    render(conn,
+      "index.html",
+      player_states: %{:john => GoFish.Player.get_state(:john),
+                      :simon => GoFish.Player.get_state(:simon)})
   end
 
   def draw_card(conn,%{"player" => player}) do
