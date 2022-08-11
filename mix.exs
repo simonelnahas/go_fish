@@ -20,7 +20,7 @@ defmodule GoFish.MixProject do
   # Type `mix help compile.app` for more information.
   def application do
     [
-      mod: {GoFish.Application, []},
+      mod: {GoFish.PhoenixApplication, []},
       extra_applications: [:logger, :runtime_tools]
     ]
   end
