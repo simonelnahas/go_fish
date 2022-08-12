@@ -9,11 +9,13 @@ defmodule GoFish.Application do
   def start(_type, _args) do
     children = [
       # Start the PubSub system
-      {Phoenix.PubSub, name: GoFish.PubSub}
-      # Start a worker by calling: GoFish.Worker.start_link(arg)
-      # {GoFish.Worker, arg}
+      {Phoenix.PubSub, name: GoFish.PubSub},
+      {GoFish.Controller, []},
+      {GoFish.Ocean, []},
+      Supervisor.child_spec({GoFish.Player, {:john, true}}, id: :john),
+      Supervisor.child_spec({GoFish.Player, {:simon, false}}, id: :simon)
     ]
 
-    Supervisor.start_link(children, strategy: :one_for_one, name: GoFish.Supervisor)
+    Supervisor.start_link(children, strategy: :rest_for_one, name: GoFish.Supervisor)
   end
 end
