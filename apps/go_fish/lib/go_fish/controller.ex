@@ -77,7 +77,7 @@ defmodule GoFish.Controller do
   def handle_call({:start_game, player_list}, _from, state) do
     GoFish.Ocean.start_link(nil)
     for name <- player_list do
-      GoFish.Player.start_link({name, false})
+      GoFish.Player.start_link({name, false}) #I want to start the players here and not in the application.
       if length(player_list)>2 do
         GoFish.Player.draw_cards(name, 5)
       else

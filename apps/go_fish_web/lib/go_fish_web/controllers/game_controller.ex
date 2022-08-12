@@ -18,7 +18,7 @@ defmodule GoFishWeb.GameController do
   def start_game(conn, _params) do
     %{"players_raw" => players_raw} = conn.query_params
     players = string_to_atom_list(players_raw)
-    GoFish.Controller.start_game(players)
+    GoFish.Controller.start_game(players) #TODO: start the entire GoFish.Application here with the right number of players.
     redirect(conn, to: "/")
   end
 

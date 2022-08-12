@@ -44,10 +44,7 @@ defmodule GoFish.Player do
 
   def init({name,is_my_turn}) do
     GoFish.Controller.new_player(name)
-    {:ok,
-      # initial state:
-      get_initial_state(is_my_turn)
-      }
+    {:ok, get_initial_state(is_my_turn)}
   end
 
   def handle_cast(:give_turn_to, state) do
