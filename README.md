@@ -31,3 +31,7 @@ Ready to run in production? Please [check our deployment guides](https://hexdocs
 
 ## References
 Inspired by this tutorial https://www.youtube.com/watch?v=OG7e5SidbCU
+
+
+## Plan
+- [ ] Make a separate application for the Game.
