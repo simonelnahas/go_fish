@@ -8,15 +8,17 @@ defmodule GoFishWeb.GameController do
                       :simon => GoFish.Player.get_state(:simon)})
   end
 
+  def string_to_atom_list(s) do
+    s
+    |> String.downcase()
+    |> String.split(", ")
+    |> Enum.map(& String.to_atom(&1))
+  end
+
   def start_game(conn, _params) do
     %{"players_raw" => players_raw} = conn.query_params
-
-    #TODO get players and set them
-
-    spawn(fn ->
-      {:ok, pid} = GoFish.GameSupervisor.start_link()
-      IO.inspect(pid) #Consider if it is possible to do in one application
-    end)
+    players = string_to_atom_list(players_raw)
+    GoFish.Controller.start_game(players)
     redirect(conn, to: "/")
   end
 

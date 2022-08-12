@@ -20,7 +20,6 @@ defmodule GoFishWeb.Router do
     get "/welcome", WelcomeController, :index
     get "/", GameController, :index
     get "/start_game", GameController, :start_game
-    #TODO add route for starting game
     get "/draw_card/:player", GameController, :draw_card
     get "/ask_for_card/", GameController, :ask_for_card
   end

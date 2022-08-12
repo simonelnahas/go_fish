@@ -82,6 +82,11 @@ defmodule GoFish.Controller do
     GoFish.Ocean.start_link(nil)
     for name <- player_list do
       GoFish.Player.start_link({name, false})
+      if length(player_list)>2 do
+        GoFish.Player.draw_cards(name, 5)
+      else
+        GoFish.Player.draw_cards(name, 7)
+      end
     end
     GoFish.Player.give_turn_to(hd(player_list))
     {:reply, :new_game, Map.put(state, :game_state, :in_progress)}
