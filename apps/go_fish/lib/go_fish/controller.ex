@@ -25,10 +25,6 @@ defmodule GoFish.Controller do
     GenServer.cast(__MODULE__, :book_made)
   end
 
-  def ocean_empty() do
-    GenServer.cast(__MODULE__, :ocean_empty)
-  end
-
   def stop() do
     GenServer.cast(__MODULE__, :stop)
   end
@@ -57,11 +53,11 @@ defmodule GoFish.Controller do
   end
 
   def game_over_state(state) do
-    %{:players => [], :game_state => :game_over, :total_books => 0, :ocean_empty => true, :winner => most_books(get_book_scores(state))}
+    %{state | :game_state => :game_over, :winner => most_books(get_book_scores(state))}
   end
 
   def initial_game_state() do
-    %{:players => [], :game_state => :in_progress, :total_books => 0, :ocean_empty => false, :winner => :undetermined}
+    %{:players => [], :game_state => :in_progress, :total_books => 0, :winner => :undetermined}
   end
 
 
@@ -118,10 +114,6 @@ defmodule GoFish.Controller do
   def handle_cast(:book_made, state) do
     IO.puts("Book made")
     {:noreply, Map.update!(state, :total_books, fn x -> x + 1 end)}
-  end
-
-  def handle_cast(:ocean_empty, state) do
-    {:noreply, Map.put(state, :ocean_empty, true)}
   end
 
   def handle_cast(:stop, _state) do
