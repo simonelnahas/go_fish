@@ -4,7 +4,7 @@ defmodule GoFish.Player do
 
   # Client API
 
-  def start_link({name, is_my_turn}) do
+  def start_link({name, is_my_turn}) do #TODO: remove is_my_turn, since it isn't used.
     GenServer.start_link(__MODULE__, {name, is_my_turn}, name: name)
   end
 

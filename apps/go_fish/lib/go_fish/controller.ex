@@ -14,7 +14,7 @@ defmodule GoFish.Controller do
   end
 
   def start_game(player_list) do
-    GenServer.call(__MODULE__, {:start_game, player_list})
+    GenServer.cast(__MODULE__, {:start_game, player_list})
   end
 
   def game_over() do
@@ -74,10 +74,8 @@ defmodule GoFish.Controller do
     {:reply, state, state}
   end
 
-  def handle_call({:start_game, player_list}, _from, state) do
-    GoFish.Ocean.start_link(nil)
+  def handle_cast({:start_game, player_list}, _from, state) do
     for name <- player_list do
-      GoFish.Player.start_link({name, false}) #I want to start the players here and not in the application.
       if length(player_list)>2 do
         GoFish.Player.draw_cards(name, 5)
       else
@@ -85,7 +83,7 @@ defmodule GoFish.Controller do
       end
     end
     GoFish.Player.give_turn_to(hd(player_list))
-    {:reply, :new_game, Map.put(state, :game_state, :in_progress)}
+    {:noreply, Map.put(state, :game_state, :in_progress)}
   end
 
   def handle_call(:game_over, _from, state) when state.game_state == :in_progress do

@@ -30,8 +30,36 @@ Ready to run in production? Please [check our deployment guides](https://hexdocs
 
 
 ## References
-Inspired by this tutorial https://www.youtube.com/watch?v=OG7e5SidbCU
-
+- Initially inspired by this tutorial https://www.youtube.com/watch?v=OG7e5SidbCU
 
 ## Plan
-- [ ] Make a separate application for the Game.
+- [x] Make a separate application for the Game.
+- [ ] Use dynamicSupervisors to start the game
+
+## Architecture
+
+Initial architecture:
+```mermaid
+flowchart TD
+    GoFish.AppV1 --> GoFish.PubSub
+    GoFish.AppV1 --> GoFish.DynamicGameSupervisor
+    GoFish.DynamicGameSupervisor --> GoFish.Controller
+    GoFish.DynamicGameSupervisor --> GoFish.Ocean
+    GoFish.DynamicGameSupervisor --> GoFish.PlayerSimon
+    GoFish.DynamicGameSupervisor --> GoFish.PlayerJohn
+```
+
+Support for multiple games:
+
+```mermaid
+flowchart TD
+    GoFish.AppV2 --> GoFish.PubSub
+    GoFish.AppV2 --> GoFish.DynamicGameSupervisor
+    GoFish.DynamicGameSupervisor --> GoFish.GameSupervisor1
+    GoFish.DynamicGameSupervisor --> GoFish.GameSupervisor2
+    GoFish.GameSupervisor1 --> GoFish.Controller
+    GoFish.GameSupervisor1 --> GoFish.Ocean
+    GoFish.GameSupervisor1 --> GoFish.PlayerSimon
+    GoFish.GameSupervisor1 --> GoFish.PlayerJohn
+    GoFish.GameSupervisor1 --> GoFish.PlayerPep
+```

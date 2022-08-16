@@ -18,7 +18,17 @@ defmodule GoFishWeb.GameController do
   def start_game(conn, _params) do
     %{"players_raw" => players_raw} = conn.query_params
     players = string_to_atom_list(players_raw)
-    GoFish.Controller.start_game(players) #TODO: start the entire GoFish.Application here with the right number of players.
+
+    #works with 2 players for now
+    #TODO: start the entire GoFish.Application here with the right number of players.
+    DynamicSupervisor.start_child(GoFish.DynamicGameSupervisor, GoFish.Ocean)
+    DynamicSupervisor.start_child(GoFish.DynamicGameSupervisor, GoFish.Controller)
+    for player <- players do
+      DynamicSupervisor.start_child(
+        GoFish.DynamicGameSupervisor,
+        Supervisor.child_spec({GoFish.Player, {player, false}}, id: player))
+    end
+    GoFish.Controller.start_game(players)
     redirect(conn, to: "/")
   end
 
