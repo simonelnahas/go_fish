@@ -2,10 +2,18 @@ defmodule GoFishWeb.GameController do
   use GoFishWeb, :controller
 
   def index(conn, _params) do
+    players = GoFish.Controller.get_players()
+
+    player_states_list = Enum.reduce(players, [],
+      fn player, acc ->
+        [{player, GoFish.Player.get_state(player)} | acc]
+    end)
+
+    player_states = Map.new(player_states_list)
+
     render(conn,
       "index.html",
-      player_states: %{:john => GoFish.Player.get_state(:john),
-                      :simon => GoFish.Player.get_state(:simon)})
+      player_states: player_states)
   end
 
   def string_to_atom_list(s) do
@@ -19,8 +27,6 @@ defmodule GoFishWeb.GameController do
     %{"players_raw" => players_raw} = conn.query_params
     players = string_to_atom_list(players_raw)
 
-    #works with 2 players for now
-    #TODO: start the entire GoFish.Application here with the right number of players.
     DynamicSupervisor.start_child(GoFish.DynamicGameSupervisor, GoFish.Ocean)
     DynamicSupervisor.start_child(GoFish.DynamicGameSupervisor, GoFish.Controller)
     for player <- players do
@@ -28,7 +34,9 @@ defmodule GoFishWeb.GameController do
         GoFish.DynamicGameSupervisor,
         Supervisor.child_spec({GoFish.Player, {player, false}}, id: player))
     end
+
     GoFish.Controller.start_game(players)
+
     redirect(conn, to: "/")
   end
 

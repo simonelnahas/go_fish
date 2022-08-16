@@ -11,11 +11,6 @@ defmodule GoFish.Application do
       # Start the PubSub system
       {Phoenix.PubSub, name: GoFish.PubSub},
       {DynamicSupervisor, name: GoFish.DynamicGameSupervisor, strategy: :one_for_one}
-
-      # {GoFish.Controller, []},
-      # {GoFish.Ocean, []},
-      # Supervisor.child_spec({GoFish.Player, {:john, true}}, id: :john),
-      # Supervisor.child_spec({GoFish.Player, {:simon, false}}, id: :simon)
     ]
 
     Supervisor.start_link(children, strategy: :rest_for_one, name: GoFish.Supervisor)

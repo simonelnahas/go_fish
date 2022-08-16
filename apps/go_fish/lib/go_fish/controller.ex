@@ -13,6 +13,10 @@ defmodule GoFish.Controller do
     GenServer.call(__MODULE__, :get_state)
   end
 
+  def get_players() do
+    GenServer.call(__MODULE__, :get_players)
+  end
+
   def start_game(player_list) do
     GenServer.call(__MODULE__, {:start_game, player_list})
   end
@@ -57,7 +61,7 @@ defmodule GoFish.Controller do
   end
 
   def initial_game_state() do
-    %{:players => [], :game_state => :in_progress, :total_books => 0, :winner => :undetermined}
+    %{:players => [], :game_state => :uninitialized, :total_books => 0, :winner => :undetermined}
   end
 
 
@@ -74,7 +78,11 @@ defmodule GoFish.Controller do
     {:reply, state, state}
   end
 
-  def handle_call({:start_game, player_list}, _from, state) do
+  def handle_call(:get_players, _from, state) do
+    {:reply, Map.get(state, :players, []), state}
+  end
+
+  def handle_call({:start_game, player_list}, _from, state) when state.game_state == :uninitialized  do
     for name <- player_list do
       if length(player_list)>2 do
         GoFish.Player.draw_cards(name, 5)

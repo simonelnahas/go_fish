@@ -28,3 +28,6 @@
     align-items: center; 
     width: 25px;
 }
+.opponent-label {
+    display: inline;
+}
