@@ -8,7 +8,7 @@
             <%= if (get_in(@player_states, [player, :is_my_turn])) do %>
               It's your turn! <br />
               <%= if !Enum.empty?(get_in(@player_states, [player, :hand])) do %>
-                Take card from <br />
+                Ask the following player: <br />
                 <%= for opponent <- Map.keys(Map.delete(@player_states, player)) do %>
                   <div>
                     <label class="opponent-label" for={opponent}>
@@ -18,7 +18,7 @@
                   </div>
                 <% end %>
                 <input type="hidden" name="taker" value={player} />
-                Choose the card you want to ask for: <br />
+                For all their cards with the same value as: <br />
               <% end %>
             <% end %>
             <div style="display:flex; flex-flow:wrap; row-gap: 10px; padding-right: 30px; column-gap:-20px">
@@ -27,18 +27,9 @@
                                 do %>
                 <input type="hidden" name="value" value={to_string(card.value)} required/>
                 <button
-                  class={
-                    "playing-card " <>
-                      if get_in(@player_states, [player, :is_my_turn]) do
-                        "
-                                  card-hover"
-                      else
-                        ""
-                      end
-                  }
+                  class={"playing-card card-hover"}
                   type="submit"
-                  enabled={get_in(@player_states, [player, :is_my_turn])}
-                >
+                  disabled={!get_in(@player_states, [player, :is_my_turn])}>
                   <div class="playing-card-inner">
                     <span style={
                       "line-height:1; font-weight:500; color:" <> suit_to_color(card.suit)
