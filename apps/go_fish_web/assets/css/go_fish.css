@@ -1,9 +1,9 @@
 .playing-card {
-    color: black !important;
+
     border: 1px solid black !important;
     border-radius: 5px;
     margin-right: -40px;
-    background-color: white !important;
+    background-color: white;
     height: 100px;
     width: 75px;
     padding: 5px 3px;
@@ -17,6 +17,20 @@
     translate: 0 -10px;
     z-index: 20;
 }
+
+/* highlight selected card */
+input[type="radio"]:checked+div{ background-color: #95C8FF; } 
+
+input.hide-radio-input {
+    /* Add if not using autoprefixer */
+    -webkit-appearance: none;
+    appearance: none;
+    /* For iOS < 15 to remove gradient background */
+    background-color: #fff;
+    /* Not removed via appearance */
+    margin: 0;
+}
+
 
 .playing-card:disabled {
     box-shadow: 1px 4px 2px;
@@ -33,6 +47,10 @@
     width: 25px;
 }
 
+
+
+
 .opponent-label {
     display: inline;
 }
+

@@ -14,7 +14,7 @@
                     <label class="opponent-label" for={opponent}>
                       <%= uppercase(opponent) %>
                     </label>
-                    <input type="radio" name="giver" value={opponent} required/>
+                    <input type="radio" name="giver" value={opponent} required />
                   </div>
                 <% end %>
                 <input type="hidden" name="taker" value={player} />
@@ -25,27 +25,41 @@
               <%= for card <- get_in(@player_states, [player, :hand]) |> Enum.sort(&(&1.value >=
                                 &2.value)) # Sort by value
                                 do %>
-                <input type="hidden" name="value" value={to_string(card.value)} required/>
-                <button
-                  class={"playing-card card-hover"}
-                  type="submit"
-                  disabled={!get_in(@player_states, [player, :is_my_turn])}>
-                  <div class="playing-card-inner">
-                    <span style={
-                      "line-height:1; font-weight:500; color:" <> suit_to_color(card.suit)
-                    }>
-                      <%= card.value %>
-                    </span>
-                    <br />
-                    <%= suit_to_emoji(card.suit) %>
+                <label class="form-control">
+                  <input
+                    type="radio"
+                    name="value"
+                    required
+                    class="hide-radio-input"
+                    value={to_string(card.value)}
+                    disabled={!get_in(@player_states, [player, :is_my_turn])}
+                  />
+                  <div
+                    class="playing-card card-hover"
+                    disabled={!get_in(@player_states, [player, :is_my_turn])}
+                  >
+                    <div class="playing-card-inner">
+                      <span style={
+                        "line-height:1; font-weight:500; color:" <> suit_to_color(card.suit)
+                      }>
+                        <%= card.value %>
+                      </span>
+                      <br />
+                      <%= suit_to_emoji(card.suit) %>
+                    </div>
                   </div>
-                </button>
+                </label>
               <% end %>
             </div>
+            <br />
+            <input
+              type="submit"
+              value="Ask for card"
+              disabled={!get_in(@player_states, [player, :is_my_turn])}
+            />
           </form>
           <br />
-          <%= if (get_in(@player_states,[player, :is_my_turn])) and Enum.empty?(get_in(@player_states, [player,
-              :hand])) do %>
+          <%= if (get_in(@player_states,[player, :is_my_turn])) and Enum.empty?(get_in(@player_states, [player, :hand])) do %>
             <button style="background-color:#bddef6;">
               <%= link("Draw Card", to: "draw_card/#{player}", method: :get) %>
             </button>
