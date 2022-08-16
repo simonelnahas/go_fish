@@ -5,12 +5,6 @@ defmodule GoFishWeb.WelcomeController do
     render(conn, "index.html",[])
   end
 
-  def start_card(conn, _) do
-    %{"players" => players} = conn.query_params
-    GoFish.Controller.start_game(players)
-    GoFish.DynamicGameSupervisor.start_link()
-    redirect(conn, to: "/")
-  end
 
   # def draw_card(conn,%{"player" => player}) do
   #   GoFish.Player.draw_cards(String.to_existing_atom(player), 1)

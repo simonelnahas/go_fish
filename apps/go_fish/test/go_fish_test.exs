@@ -49,15 +49,11 @@ defmodule GoFishTest do
     assert :no_cards_left == GoFish.Player.draw_cards(:john, 2)
   end
 
-  def start_example_game() do
-    assert :got_cards == GoFish.Player.draw_cards(:simon, 7)
-    :timer.sleep(500)
-    assert :got_cards == GoFish.Player.draw_cards(:john, 7)
-  end
+
 
   test "example game play" do
     Logger.debug("Test: example game play")
-    start_example_game()
+    assert :ok == GoFish.Controller.start_game([:simon, :john])
     assert {:got_cards, matches} = GoFish.Player.take_all_your(3, :john, :simon)
     to_match =  [%GoFish.Ocean.Card{suit: :clubs, value: 3},
                   %GoFish.Ocean.Card{suit: :diamonds, value: 3},
@@ -77,7 +73,6 @@ defmodule GoFishTest do
     # John has the books for 3's and 4's
     assert %{:books => johns_books} = GoFish.Player.get_state(:john)
     assert Enum.all?(johns_books, fn book -> book in [3, 4] end)
-
   end
 
   test "creating books" do
@@ -92,7 +87,6 @@ defmodule GoFishTest do
 
   test "new game" do
     Logger.debug("Test: new game")
-    assert :new_game == GoFish.Controller.start_game([:john, :simon])
     assert length(GoFish.Ocean.get_state()) == 52
     assert %{books: [], hand: [], is_my_turn: true} == GoFish.Player.get_state(:john)
     assert %{books: [], hand: [], is_my_turn: false} == GoFish.Player.get_state(:simon)
@@ -100,16 +94,16 @@ defmodule GoFishTest do
 
   test "game over" do
     Logger.debug("Test: game over")
-    assert :got_cards == GoFish.Player.draw_cards(:simon, 26)
-    assert :got_cards == GoFish.Player.draw_cards(:john, 26)
-    # Ocean is now empty
-    assert :no_cards_left == GoFish.Player.take_all_your(2, :john, :simon)
-    assert :no_cards_left = GoFish.Player.take_all_your(14, :simon, :john)
-    assert %{:ocean_empty => true} = GoFish.Controller.get_state()
-    # John and Simon both only have two 8s
-    assert {:got_cards, _matches} = GoFish.Player.take_all_your(8, :john, :simon)
-    # John gets the final book and the game ends
-    assert %{:players => [], :game_state => :game_over, :ocean_empty => true, :winner => {:john, 7}} = GoFish.Controller.get_state()
+    assert :ok == GoFish.Controller.start_game([:simon, :john])
+
+    # Simon draws all the remaining cards and automatically creates books
+    assert :got_cards == GoFish.Player.draw_cards(:simon, 52-7*2)
+
+    # Simon gets the remaining 5's and 3's from John
+    assert {:got_cards, _} = GoFish.Player.take_all_your(3, :simon, :john)
+    assert {:got_cards, _} = GoFish.Player.take_all_your(5, :simon, :john)
+
+    assert %{:game_state => :game_over, :winner => {:simon, 12}} = GoFish.Controller.get_state()
   end
 
 end

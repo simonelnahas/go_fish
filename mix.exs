@@ -8,7 +8,7 @@ defmodule GoFish.Umbrella.MixProject do
       start_permanent: Mix.env() == :prod,
       deps: deps(),
       aliases: aliases(),
-      apps: [:go_fish_web]
+      apps: [:go_fish_web, :go_fish]
     ]
   end
 

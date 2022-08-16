@@ -168,7 +168,6 @@ defmodule GoFish.Player do
               :no_cards_left -> acc
             end
           end)
-          # IO.puts(":got_cards #{inspect([card1|cards])}\n\n")
           {:reply, :got_cards, add_cards(state, [card1|cards]) }
     end
   end
