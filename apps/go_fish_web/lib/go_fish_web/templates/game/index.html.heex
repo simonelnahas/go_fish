@@ -11,10 +11,11 @@
                 Ask the following player: <br />
                 <%= for opponent <- Map.keys(Map.delete(@player_states, player)) do %>
                   <div>
-                    <label class="opponent-label" for={opponent}>
+
+                    <label class="opponent-label form-control">
+                      <input type="radio" name="giver" value={opponent} required />
                       <%= uppercase(opponent) %>
                     </label>
-                    <input type="radio" name="giver" value={opponent} required />
                   </div>
                 <% end %>
                 <input type="hidden" name="taker" value={player} />
