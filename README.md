@@ -32,10 +32,11 @@ Ready to run in production? Please [check our deployment guides](https://hexdocs
 ## References
 - Initially inspired by this tutorial https://www.youtube.com/watch?v=OG7e5SidbCU
 
-## Plan
+## Backlog
 - [x] Make a separate application for the Game.
 - [x] Use dynamicSupervisors to start the game
-- [ ] Support for multiple concurrent games
+- [ ] Winner announcement screen 
+- [ ] Support for multiple concurrent games [#9](https://github.com/simonelnahas/go_fish/issues/9)
 
 
 ## Architecture: Supervision Tree
