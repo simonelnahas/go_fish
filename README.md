@@ -24,9 +24,10 @@ Ready to run in production? Please [check our deployment guides](https://hexdocs
 
 - [x] Game logic
 - [x] Website UI
-- [ ] Support for playing across multiple clients
-- [ ] Support for more than 2 players [#6](https://github.com/simonelnahas/go_fish/issues/6)
-- [ ] LiveView update of Game State [#8](https://github.com/simonelnahas/go_fish/issues/8)
+- [x] Support for more than 2 players [#6](https://github.com/simonelnahas/go_fish/issues/6)
+- [ ] Playing across multiple clients & LiveView update of Game State [#8](https://github.com/simonelnahas/go_fish/issues/8)
+- [ ] Winner announcement screen 
+- [ ] Support for multiple concurrent games [#9](https://github.com/simonelnahas/go_fish/issues/9)
 
 
 ## References
@@ -35,8 +36,7 @@ Ready to run in production? Please [check our deployment guides](https://hexdocs
 ## Backlog
 - [x] Make a separate application for the Game.
 - [x] Use dynamicSupervisors to start the game
-- [ ] Winner announcement screen 
-- [ ] Support for multiple concurrent games [#9](https://github.com/simonelnahas/go_fish/issues/9)
+
 
 
 ## Architecture: Supervision Tree
