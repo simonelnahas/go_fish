@@ -1,0 +1,56 @@
+.playing-card {
+
+    border: 1px solid black !important;
+    border-radius: 5px;
+    margin-right: -40px;
+    background-color: white;
+    height: 100px;
+    width: 75px;
+    padding: 5px 3px;
+    box-shadow: 1px 4px 2px;
+    transition: box-shadow 0.5s ease-in-out, translate 0.5s ease-in-out;
+    z-index: 0;
+}
+
+.playing-card:hover {
+    box-shadow: 1px 20px 20px;
+    translate: 0 -10px;
+    z-index: 20;
+}
+
+/* highlight selected card */
+input[type="radio"]:checked+div{ background-color: #95C8FF; } 
+
+input.hide-radio-input {
+    /* Add if not using autoprefixer */
+    -webkit-appearance: none;
+    appearance: none;
+    /* For iOS < 15 to remove gradient background */
+    background-color: #fff;
+    /* Not removed via appearance */
+    margin: 0;
+}
+
+
+.playing-card:disabled {
+    box-shadow: 1px 4px 2px;
+    translate: 0 0;
+    z-index: 20;
+    opacity: 1;
+    cursor: not-allowed;
+}
+
+.playing-card-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 25px;
+}
+
+
+
+
+.opponent-label {
+    display: inline;
+}
+
