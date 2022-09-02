@@ -1,25 +1,25 @@
 defmodule GoFishWeb.GameController do
   use GoFishWeb, :controller
 
-  def index(conn, _params) do
-    if nil == Process.whereis(GoFish.Controller) do
-      redirect(conn, to: "/welcome")
-    else
-      players = GoFish.Controller.get_players()
-      player_states_list =
-      Enum.reduce(players, [], fn player, acc ->
-        [{player, GoFish.Player.get_state(player)} | acc]
-      end)
+  # def index(conn, _params) do
+  #   if nil == Process.whereis(GoFish.Controller) do
+  #     redirect(conn, to: "/welcome")
+  #   else
+  #     players = GoFish.Controller.get_players()
+  #     player_states_list =
+  #     Enum.reduce(players, [], fn player, acc ->
+  #       [{player, GoFish.Player.get_state(player)} | acc]
+  #     end)
 
-      player_states = Map.new(player_states_list)
+  #     player_states = Map.new(player_states_list)
 
-      render(
-        conn,
-        "index.html",
-        player_states: player_states
-        )
-    end
-  end
+  #     render(
+  #       conn,
+  #       "index.html",
+  #       player_states: player_states
+  #       )
+  #   end
+  # end
 
   def string_to_atom_list(s) do
     s

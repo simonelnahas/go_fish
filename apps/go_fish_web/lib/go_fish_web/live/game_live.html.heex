@@ -1,0 +1,88 @@
+<%= if @client_player == nil do %>
+  <div class="modal">
+    <div class="modal-content">
+      <h1>Who are you?</h1>
+
+      <%= for player <- @players do %>
+        <button phx-click="choose_player" value={player}>
+          <%= uppercase(player) %>
+        </button>
+      <% end %>
+    </div>
+  </div>
+<% else %>
+  <section class="row">
+    <article class="column">
+      <div style="display:flex; justify-content: space-between; flex-flow: wrap; ">
+
+          <div style="width:100%; margin: 10px; border: 1px solid black; border-radius: 15px; padding: 10px">
+            <h1>Hey <%= uppercase(@client_player) %></h1>
+            <form action="/ask_for_card">
+              <%= if (get_in(@player_state, :is_my_turn)) do %>
+                It's your turn! <br />
+                <%= if !Enum.empty?(get_in(@player_states, :hand)) do %>
+                  Ask the following player: <br />
+                  <%= for opponent <- @opponents do %>
+                    <div>
+                      <label class="opponent-label form-control">
+                        <input type="radio" name="giver" value={opponent} required />
+                        <%= uppercase(opponent) %>
+                      </label>
+                    </div>
+                  <% end %>
+                  <input type="hidden" name="taker" value={@client_player} />
+                  For all their cards with the same value as: <br />
+                <% end %>
+              <% end %>
+              <div style="display:flex; flex-flow:wrap; row-gap: 10px; padding-right: 30px; column-gap:-20px">
+                <%= for card <- get_in(@player_state, :hand) |> Enum.sort(&(&1.value >=
+                                &2.value)) # Sort by value
+                                do %>
+                  <label class="form-control">
+                    <input
+                      type="radio"
+                      name="value"
+                      required
+                      class="hide-radio-input"
+                      value={to_string(card.value)}
+                      disabled={!get_in(@player_state, :is_my_turn)}
+                    />
+                    <div
+                      class="playing-card card-hover"
+                      disabled={!get_in(@player_state, :is_my_turn)}
+                    >
+                      <div class="playing-card-inner">
+                        <span style={
+                          "line-height:1; font-weight:500; color:" <> suit_to_color(card.suit)
+                        }>
+                          <%= card.value %>
+                        </span>
+                        <br />
+                        <%= suit_to_emoji(card.suit) %>
+                      </div>
+                    </div>
+                  </label>
+                <% end %>
+              </div>
+              <br />
+              <input
+                type="submit"
+                value="Ask for card"
+                disabled={!get_in(@player_state, :is_my_turn)}
+              />
+            </form>
+            <br />
+            <%= if (get_in(@player_state, :is_my_turn)) and Enum.empty?(get_in(@player_state, :hand)) do %>
+              <button style="background-color:#bddef6;">
+                <%= link("Draw Card", to: "draw_card/#{@client_player}", method: :get) %>
+              </button>
+            <% end %>
+            <br /> Collected books: <br />
+            <%= for book <- get_in(@player_state, :books) do %>
+              <%= book %>'s
+            <% end %>
+          </div>
+      </div>
+    </article>
+  </section>
+<% end %>
