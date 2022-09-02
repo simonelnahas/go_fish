@@ -17,6 +17,17 @@ defmodule GoFish.Controller do
     GenServer.call(__MODULE__, :get_players)
   end
 
+  def get_player_states() do
+    players = GoFish.Controller.get_players()
+
+    player_states_list =
+      Enum.reduce(players, [], fn player, acc ->
+        [{player, GoFish.Player.get_state(player)} | acc]
+      end)
+
+    Map.new(player_states_list)
+  end
+
   def start_game(player_list) do
     GenServer.call(__MODULE__, {:start_game, player_list})
   end
@@ -33,8 +44,7 @@ defmodule GoFish.Controller do
     GenServer.cast(__MODULE__, :stop)
   end
 
-
-  #Helper functions
+  # Helper functions
 
   # def name_to_id(name) do
   #   String.to_atom(name)
@@ -53,7 +63,7 @@ defmodule GoFish.Controller do
   end
 
   def most_books(list_of_tuples) do
-    most_books([hd(list_of_tuples),most_books(tl(list_of_tuples))])
+    most_books([hd(list_of_tuples), most_books(tl(list_of_tuples))])
   end
 
   def game_over_state(state) do
@@ -64,14 +74,14 @@ defmodule GoFish.Controller do
     %{:players => [], :game_state => :uninitialized, :total_books => 0, :winner => :undetermined}
   end
 
-
   # Callback
   def init(_arg) do
     {:ok, initial_game_state()}
   end
 
   def handle_call({:new_player, player_name}, _from, state) do
-    {:reply, {:new_player_added, player_name}, Map.update!(state, :players, fn x -> [player_name|x] end)}
+    {:reply, {:new_player_added, player_name},
+     Map.update!(state, :players, fn x -> [player_name | x] end)}
   end
 
   def handle_call(:get_state, _from, state) do
@@ -82,23 +92,27 @@ defmodule GoFish.Controller do
     {:reply, Map.get(state, :players, []), state}
   end
 
-  def handle_call({:start_game, player_list}, _from, state) when state.game_state == :uninitialized  do
+  def handle_call({:start_game, player_list}, _from, state)
+      when state.game_state == :uninitialized do
     for name <- player_list do
-      if length(player_list)>2 do
+      if length(player_list) > 2 do
         GoFish.Player.draw_cards(name, 5)
       else
         GoFish.Player.draw_cards(name, 7)
       end
     end
+
     GoFish.Player.give_turn_to(hd(player_list))
     {:reply, :ok, Map.put(state, :game_state, :in_progress)}
   end
 
   def handle_call(:game_over, _from, state) when state.game_state == :in_progress do
     final_state = game_over_state(state)
+
     for name <- state.players do
       GoFish.Player.stop(name)
     end
+
     GoFish.Ocean.stop()
     {:reply, :game_terminated, final_state}
   end
@@ -110,9 +124,11 @@ defmodule GoFish.Controller do
   def handle_cast(:book_made, state) when state.total_books == 12 do
     IO.puts("Final book")
     final_state = game_over_state(state)
+
     for name <- state.players do
       GoFish.Player.stop(name)
     end
+
     GoFish.Ocean.stop()
     {:noreply, final_state}
   end
@@ -125,5 +141,4 @@ defmodule GoFish.Controller do
   def handle_cast(:stop, _state) do
     {:stop, :normal}
   end
-
 end

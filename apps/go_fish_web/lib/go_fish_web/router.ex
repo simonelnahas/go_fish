@@ -1,6 +1,8 @@
 defmodule GoFishWeb.Router do
   use GoFishWeb, :router
 
+  import Phoenix.LiveView.Router
+
   pipeline :browser do
     plug :accepts, ["html"]
     plug :fetch_session
@@ -21,6 +23,7 @@ defmodule GoFishWeb.Router do
     get "/start_game", GameController, :start_game
     get "/draw_card/:player", GameController, :draw_card
     get "/ask_for_card/", GameController, :ask_for_card
+    live "/live", GameLive
   end
 
   # Other scopes may use custom stacks.
